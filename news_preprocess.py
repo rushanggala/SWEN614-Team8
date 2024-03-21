@@ -11,54 +11,54 @@ import time
 def clean_text_column(df, column_name):
     # Convert text to lowercase
     df[column_name] = df[column_name].str.lower()
-    print('Lowercase conversion complete')
+    # print('Lowercase conversion complete')
 
     # Remove punctuation
     df[column_name] = df[column_name].apply(lambda x: x.translate(str.maketrans('', '', string.punctuation)))
-    print('Punctuation removal complete')
+    # print('Punctuation removal complete')
 
     # Remove URLs
     df[column_name] = df[column_name].apply(lambda x: re.sub(r'http\S+', '', x))
-    print('URL removal complete')
+    # print('URL removal complete')
 
     # Remove special characters and escape sequences
     df[column_name] = df[column_name].apply(lambda x: re.sub(r'\\n|\\t|\\r|&nbsp;', '', x))
-    print('Special character and escape sequence removal complete')
+    # print('Special character and escape sequence removal complete')
 
     # Remove emojis
     df[column_name] = df[column_name].apply(lambda x: x.encode('ascii', 'ignore').decode('ascii'))
-    print('Emoji removal complete')
+    # print('Emoji removal complete')
 
     # Remove numbers
     df[column_name] = df[column_name].apply(lambda x: re.sub(r'\d+', '', x))
-    print('Number removal complete')
+    # print('Number removal complete')
 
     # Tokenization
     df[column_name] = df[column_name].apply(lambda x: word_tokenize(x))
-    print('Tokenization complete')
+    # print('Tokenization complete')
 
     # Remove stopwords
     stop_words = set(stopwords.words('english'))
     df[column_name] = df[column_name].apply(lambda x: [word for word in x if word not in stop_words])
-    print('Stopword removal complete')
+    # print('Stopword removal complete')
 
     # Stemming
     ps = PorterStemmer()
     df[column_name] = df[column_name].apply(lambda x: [ps.stem(word) for word in x])
-    print('Stemming complete')
+    # print('Stemming complete')
 
     # Lemmatization
     lemmatizer = WordNetLemmatizer()
     df[column_name] = df[column_name].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
-    print('Lemmatization complete')
+    # print('Lemmatization complete')
 
     # Join tokens back into strings
     df[column_name] = df[column_name].apply(lambda x: ' '.join(x))
-    print('Joining tokens complete')
+    # print('Joining tokens complete')
 
     # Remove extra whitespace
     df[column_name] = df[column_name].apply(lambda x: re.sub(' +', ' ', x))
-    print('Extra whitespace removal complete')
+    # print('Extra whitespace removal complete')
 
     return df
 
@@ -87,7 +87,10 @@ for chunk in pd.read_csv(file_path, usecols=columns_to_use, chunksize=chunk_size
     iter_start_time = time.time()
     filtered_chunk = chunk[chunk['Stock_symbol'].isin(selected_symbols)]
     filtered_chunk = filtered_chunk[filtered_chunk['Date'].dt.year.isin([2022, 2023])]
-    clean_text_column(filtered_chunk, 'Article')  # Modify DataFrame in-place
+    cleaning_start_time = time.time()
+    filtered_chunk = clean_text_column(filtered_chunk, 'Article')  # Modify DataFrame in-place
+    print("Cleaning Chunk {} ({} records) completed in {:.2f} seconds".format(index, filtered_chunk.shape[0],
+                                                                              time.time() - cleaning_start_time))
     filtered_dfs.append(filtered_chunk)  # Append filtered chunk to list
 
     filtered_json = filtered_chunk.to_json(orient='records')
@@ -103,6 +106,6 @@ for chunk in pd.read_csv(file_path, usecols=columns_to_use, chunksize=chunk_size
 
 # Concatenate all filtered chunks at once
 filtered_df = pd.concat(filtered_dfs, ignore_index=True)
-
+filtered_df.to_json("filtered_data.json", orient='records', lines=True)
 print(filtered_df.shape)
 filtered_df.to_csv("Stock_News.csv", index=False)
