@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-stocksentimentanalys-dev-32122-authRole",
+      "UnauthRoleArn": "arn:aws:iam::381492011036:role/amplify-stocksentimentanalys-dev-32122-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::381492011036:role/amplify-stocksentimentanalys-dev-32122-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-stocksentimentanalys-dev-32122-deployment",
+      "UnauthRoleName": "amplify-stocksentimentanalys-dev-32122-unauthRole",
+      "StackName": "amplify-stocksentimentanalys-dev-32122",
+      "StackId": "arn:aws:cloudformation:us-east-1:381492011036:stack/amplify-stocksentimentanalys-dev-32122/cb16a010-e81c-11ee-b1f7-0edc547d2683",
+      "AmplifyAppId": "d2j8s38ec69t9c"
+    }
+  }
+}
