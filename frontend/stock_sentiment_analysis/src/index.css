@@ -1,13 +1,172 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  background-color: linen;
+  padding: 1em;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.logo-container {
+  padding-right: 5px; 
+}
+
+#logo {
+  height: 90px;
+  width: auto; 
+}
+
+
+.search-bar {
+  display: inline; 
+  margin-left: 5px;
+}
+
+#searchInput {
+  padding: 0.5em;
+  margin-right: 8px;
+}
+
+#searchButton {
+  padding: 0.5em 1em;
+  color: black;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+
+#searchButton:hover {
+  background-color: lightblue;
+}
+
+.content {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1em;
+}
+
+.stock-chart, .news-summary {
+  background-color: white;
+  padding: 1em;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.main-content {
+  display: flex;
+}
+
+.left-content {
+  flex-grow: 1;
+}
+
+.top-companies {
+  width: 300px; 
+  border-left: 1px solid #ccc; 
+  padding-left: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+
+.footer {
+  background-color: white;
+  color: black;
+  text-align: center;
+  padding: 1em;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.stock-chart-container {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  padding: 1em;
+  gap: 10px;
+  border-bottom: 2px solid #ccc;
+}
+
+.stock-details {
+  flex: 0 0 auto;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  border-right: 2px dotted #ccc;
+}
+
+.stock-details:last-child {
+  border-right: none; 
+}
+
+.stock-name {
+  margin-right: 10px;
+  color: black;
+  cursor: pointer;
+}
+
+.stock-name:hover {
+  color: blue;
+}
+
+.stock-high,
+.stock-low {
+  margin-right: 10px;
+}
+
+button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e2e2e2;
+}
+
+.top-companies-container {
+  background-color: #f8f8f8;
+  border-radius: 6px;
+  padding: 1em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-width: 400px; 
+  margin: 20px;
+}
+
+.company-ticker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dotted #ccc;
+}
+
+.ticker-name {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.ticker-name:hover {
+  color: blue;
+}
+
+.ticker-chart {
+  width: 100px;
+  height: 50px;
+  background: lightgreen;
+  margin: 0 10px;
+}
+
+.ticker-values {
+  text-align: right;
+}
+
+.ticker-high {
+  color: green;
+}
+
+.ticker-low {
+  color: red; 
 }
