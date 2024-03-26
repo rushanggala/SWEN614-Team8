@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import './index.css';
+import NewsDatas from './news.json';
 
 const stockData = [
   {
@@ -93,9 +94,7 @@ const HomePage = () => {
 
       <div className="main-content">
         <div className="left-content">
-          <div className="news-summary">
-            <p>News</p>
-          </div>
+          <NewsData /> {}
         </div>
         <div className="top-companies">
           <TopCompanies />
@@ -172,6 +171,76 @@ const TopCompanies = () => {
       {topCompanies.map((company, index) => (
         <CompanyTicker key={index} company={company} />
       ))}
+    </div>
+  );
+};
+
+// const NewsData = () => {
+//   const [newsItems] = useState(NewsDatas);
+//   const [currentIndex, setCurrentIndex] = useState(0);
+
+//   useEffect(() => {
+//       const interval = setInterval(() => {
+//           setCurrentIndex((prevIndex) => 
+//               prevIndex < newsItems.length - 1 ? prevIndex + 1 : 0
+//           );
+//       }, 2000);
+
+//       return () => clearInterval(interval);
+//   }, [newsItems.length]);
+
+//   return (
+//       <div className="news-section">
+//           {newsItems.length > 0 && (
+//               <>
+//                   <NewsItem news={newsItems[currentIndex]} />
+//                   <div className="news-navigation">
+//                       <button onClick={() => setCurrentIndex(currentIndex > 0 ? currentIndex - 1 : newsItems.length - 1)}>
+//                           Previous
+//                       </button>
+//                       <button onClick={() => setCurrentIndex(currentIndex < newsItems.length - 1 ? currentIndex + 1 : 0)}>
+//                           Next
+//                       </button>
+//                   </div>
+//               </>
+//           )}
+//       </div>
+//   );
+// };
+
+const NewsData = () => {
+  const [newsItems] = useState(NewsDatas);
+
+  // Calculate the layout based on the current index
+  const largeNewsItem = newsItems[0]; // The large item will always be the first
+  const smallNewsItems = newsItems.slice(1, 4); // The next three items for the smaller section
+
+  return (
+    <div className="news-section">
+      <div className="large-news">
+        <NewsItem news={largeNewsItem} />
+      </div>
+      <div className="small-news">
+        {smallNewsItems.map((news, index) => (
+          <NewsItem key={index} news={news} size="small" />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const NewsItem = ({ news }) => {
+  const highResImage = news.thumbnail?.resolutions[0]?.url || 'https://via.placeholder.com/';
+
+  return (
+    <div className="news-item">
+      <a href={news.link} target="_blank" rel="noopener noreferrer">
+        <img
+          src={highResImage}
+          alt={news.title}
+        />
+        <h3>{news.title}</h3>
+      </a>
     </div>
   );
 };
