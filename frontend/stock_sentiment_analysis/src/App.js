@@ -84,15 +84,15 @@ const HomePage = () => {
           <a href="/">
             <img src="download.png" alt="Logo" id="logo" />
           </a>
-          <h1>Stock Sentimeter</h1>
-        <div className="search-bar">
+          {/* <h1>Stock Sentimeter</h1> */}
+        {/* <div className="search-bar">
           <input type="text" placeholder="Search for stock..." />
           <button type="submit">🔍</button>
-        </div>
-        {/* <div className="title-box">
+        </div> */}
+        <div className="title-box">
           <h1>Stock Sentimeter</h1>
         </div>
-        <SearchBar onSearch={handleSearch} /> */}
+        <SearchBar onSearch={handleSearch} />
       </div>
 
       <StockChart /> {}
@@ -124,6 +124,7 @@ const StockDetails = ({ stock }) => {
   );
 };
 
+
 const StockChart = () => {
   const [visibleStocks, setVisibleStocks] = useState(stockData.slice(0, 5));
 
@@ -145,11 +146,9 @@ const StockChart = () => {
 
   return (
     <div className="stock-chart-container">
-      <button onClick={handlePrev}>&lt;</button>
       {visibleStocks.map((stock, index) => (
         <StockDetails key={index} stock={stock} />
       ))}
-      <button onClick={handleNext}>&gt;</button>
     </div>
   );
 };
@@ -216,9 +215,8 @@ const TopCompanies = () => {
 const NewsData = () => {
   const [newsItems] = useState(NewsDatas);
 
-  // Calculate the layout based on the current index
-  const largeNewsItem = newsItems[0]; // The large item will always be the first
-  const smallNewsItems = newsItems.slice(1, 4); // The next three items for the smaller section
+  const largeNewsItem = newsItems[0]; 
+  const smallNewsItems = newsItems.slice(1, 4); 
 
   return (
     <div className="news-section">

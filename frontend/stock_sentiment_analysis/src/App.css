@@ -4,6 +4,7 @@
   box-sizing: border-box;
 }
 
+
 .App {
   text-align: center;
 }
@@ -32,15 +33,6 @@
 
 .App-link {
   color: #61dafb;
-}
-
-.news-item a{
-  text-decoration: none;
-  color: black;
-}
-
-.news-item a:hover{
-  text-decoration: underline;
 }
 
 .header {
@@ -90,6 +82,56 @@
   cursor: pointer;
   padding: 5px 10px;
 
+}
+
+.news-item a{
+  text-decoration: none;
+  color: black;
+}
+
+.news-item a:hover{
+  text-decoration: underline;
+}
+
+.TopCompanies {
+  margin-left: 1000px;
+}
+
+.large-news {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0; /* Adjusted from -150px */
+}
+
+.small-news {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0; /* Adjusted from -90px */
+  margin-right: 0; /* Adjusted from -100px */
+}
+
+@keyframes scrollRightToLeft {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.stock-details {
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  animation: scrollRightToLeft 20s linear infinite;
+  display: inline-block;
+  margin-right: 50px;
+}
+
+.stock-chart-container::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes App-logo-spin {
