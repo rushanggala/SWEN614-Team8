@@ -79,12 +79,17 @@ def fetch_stock_price(ticker):
 
 
 def main():
-    tickers = ['AAPL', 'AMZN', 'AMD', 'BA', 'BX', 'COST', 'CRM', 'DIS', 'GOOG', 'GS', 'IBM', 'INTC', 'MS', 'NKE',
+    tickers = ['AAPL', 'AMZN', 'AMD', 'BA', 'BX', 'COST', 'CRM', 'DIS', 'GOOG', 'GS', 'INTC', 'MS', 'NKE',
                'NVDA']
+    all_data = {}
     for ticker in tickers:
         monthly_data = fetch_stock_price(ticker)
-        create_table_and_push(ticker, monthly_data)
+        # create_table_and_push(ticker, monthly_data)
+        all_data[ticker] = monthly_data.to_dict(orient='records')
 
+    # Write all the data to a JSON file
+    with open('../data/stock_data.json', 'w') as json_file:
+        json.dump(all_data, json_file)
 
 if __name__ == '__main__':
     main()
