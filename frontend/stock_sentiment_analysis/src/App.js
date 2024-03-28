@@ -66,7 +66,7 @@ const SearchBar = ({ onSearch }) => {
         id="searchButton"
         type="submit" 
       >
-        Search
+        🔍
       </button>
     </form>
   );
@@ -84,10 +84,15 @@ const HomePage = () => {
           <a href="/">
             <img src="download.png" alt="Logo" id="logo" />
           </a>
-        <div className="title-box">
+          <h1>Stock Sentimeter</h1>
+        <div className="search-bar">
+          <input type="text" placeholder="Search for stock..." />
+          <button type="submit">🔍</button>
+        </div>
+        {/* <div className="title-box">
           <h1>Stock Sentimeter</h1>
         </div>
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar onSearch={handleSearch} /> */}
       </div>
 
       <StockChart /> {}

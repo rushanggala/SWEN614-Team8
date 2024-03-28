@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .App {
   text-align: center;
 }
@@ -28,11 +34,70 @@
   color: #61dafb;
 }
 
+.news-item a{
+  text-decoration: none;
+  color: black;
+}
+
+.news-item a:hover{
+  text-decoration: underline;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  background-color: #282c34;
+  color: white;
+  padding: 0 20px;
+  width: 100%;
+}
+
+.header, .title-and-search{
+  display: flex;
+  align-items: center;
+}
+
+.header h1{
+  margin: 0;
+  margin-right: -250px;
+}
+
+.header, .search-container{
+  white-space: nowrap;
+}
+
+.search-bar{
+  display: flex;
+  align-items: center;
+}
+
+.search-bar input[type="text"]{
+  margin-right: 10px;
+  padding: 5px 10px;
+  height: auto;
+  border: 1px solid orange;
+  border-radius: 20px;
+  color : orange;
+}
+
+.search-bar button{
+  font-size: 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: 1px solid white;
+  border-radius: 20px;
+  background: none;
+  cursor: pointer;
+  padding: 5px 10px;
+
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
-  }
+  } 
   to {
     transform: rotate(360deg);
   }
 }
+
