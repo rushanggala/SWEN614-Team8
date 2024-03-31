@@ -2,44 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import './index.css';
 import NewsDatas from './news.json';
+import { getStockData } from './utils/getStockData.js';
 
-const stockData = [
-  {
-    name: "Apple",
-    high: 145.09,
-    low: 143.25
-  },
-  {
-    name: "Google",
-    high: 2752.88,
-    low: 2725.00
-  },
-  {
-    name: "Amazon",
-    high: 3342.88,
-    low: 3310.00
-  },
-  {
-    name: "Microsoft",
-    high: 305.50,
-    low: 302.80
-  },
-  {
-    name: "Tesla",
-    high: 900.40,
-    low: 885.66
-  },
-  {
-    name: "Facebook",
-    high: 275.30,
-    low: 270.50
-  },
-  {
-    name: "Netflix",
-    high: 550.37,
-    low: 545.50
-  }
-];
 
 const SearchBar = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,9 +53,7 @@ const HomePage = () => {
           <input type="text" placeholder="Search for stock..." />
           <button type="submit">🔍</button>
         </div> */}
-        <div className="title-box">
           <h1>Stock Sentimeter</h1>
-        </div>
         <SearchBar onSearch={handleSearch} />
       </div>
 
@@ -99,10 +61,7 @@ const HomePage = () => {
 
       <div className="main-content">
         <div className="left-content">
-          <NewsData /> {}
-        </div>
-        <div className="top-companies">
-          <TopCompanies />
+          <NewsData />
         </div>
       </div>
 
@@ -118,61 +77,89 @@ const StockDetails = ({ stock }) => {
   return (
     <div className="stock-details">
       <a href="#" className="stock-name">{stock.name}</a>
-      <div className="stock-high">High: {stock.high}</div>
-      <div className="stock-low">Low: {stock.low}</div>
+      <div className="stock-high">Current: {Math.floor(stock.current_close * 1000) / 1000}</div>
+      <div className="stock-low">Previous: {Math.floor(stock.previous_close * 1000) / 1000}</div>
     </div>
   );
 };
 
+const StockChart =  () => {
 
-const StockChart = () => {
-  const [visibleStocks, setVisibleStocks] = useState(stockData.slice(0, 5));
+  const [tickerData, setTickerData] = useState([]);
+  getStockData().then(data => {
+    console.log(data);
+    setTickerData(data);
+  }).catch(error => {
+    console.error(error);
+  });
 
-  const handleNext = () => {
-    setVisibleStocks((current) => {
-      const startIndex = (stockData.indexOf(current[current.length - 1]) + 1) % stockData.length;
-      const endIndex = (startIndex + 5) % stockData.length;
-      return stockData.slice(startIndex, startIndex < endIndex ? endIndex : stockData.length);
-    });
-  };
+  const arrayData = Object.entries(tickerData??{}).map(([key, value]) => ({
+    name: key,
+    ...value
+  }));
+  // const [visibleStocks, setVisibleStocks] = useState(stockData.slice(0, 5));
 
-  const handlePrev = () => {
-    setVisibleStocks((current) => {
-      const endIndex = stockData.indexOf(current[0]);
-      const startIndex = Math.max(endIndex - 5, 0);
-      return endIndex > startIndex ? stockData.slice(startIndex, endIndex) : stockData.slice(0, 5);
-    });
-  };
+  // const handleNext = () => {
+  //   setVisibleStocks((current) => {
+  //     const startIndex = (stockData.indexOf(current[current.length - 1]) + 1) % stockData.length;
+  //     const endIndex = (startIndex + 5) % stockData.length;
+  //     return stockData.slice(startIndex, startIndex < endIndex ? endIndex : stockData.length);
+  //   });
+  // };
 
+  // const handlePrev = () => {
+  //   setVisibleStocks((current) => {
+  //     const endIndex = stockData.indexOf(current[0]);
+  //     const startIndex = Math.max(endIndex - 5, 0);
+  //     return endIndex > startIndex ? stockData.slice(startIndex, endIndex) : stockData.slice(0, 5);
+  //   });
+  // };
+
+  console.log(arrayData)
   return (
     <div className="stock-chart-container">
-      {visibleStocks.map((stock, index) => (
+      <div className="stock-chart-container-moving">
+      {arrayData.map((stock, index) => (
         <StockDetails key={index} stock={stock} />
       ))}
     </div>
+    </div>
   );
 };
 
-const topCompanies = stockData.sort((a, b) => b.high - a.high).slice(0, 5);
+const topCompanies = (tickerData) => tickerData.sort((a, b) => b.current_close - a.current_close);
 
 const CompanyTicker = ({ company }) => {
   return (
     <div className="company-ticker">
       <div className="ticker-name">{company.name}</div>
-      <div className="ticker-chart">[Placeholder]</div>
-      <div className="ticker-values">
-        <div className="ticker-high">{company.high.toFixed(2)}</div>
-        <div className="ticker-low">{company.low.toFixed(2)}</div>
-      </div>
+      <div className="ticker-price" 
+        style={{ color: company.percent_change > 0 ? 'green' : 'red' }}>
+      {Math.floor(company.percent_change * 100) / 100}</div>      
     </div>
   );
 };
 
-const TopCompanies = () => {
+const TopCompanies =  () => {
+  const [tickerData, setTickerData] = useState([]);
+  getStockData().then(data => {
+    console.log(data);
+    setTickerData(data);
+  }).catch(error => {
+    console.error(error);
+  });
+
+  const arrayData = Object.entries(tickerData??{}).map(([key, value]) => ({
+    name: key,
+    ...value
+  }));
+
+  console.log(tickerData)
+  const topCompaniesTicker = topCompanies(arrayData);
   return (
     <div className="top-companies-container">
       <h2>Top Companies</h2>
-      {topCompanies.map((company, index) => (
+      {topCompaniesTicker.map((company, index) => (
         <CompanyTicker key={index} company={company} />
       ))}
     </div>
@@ -228,6 +215,7 @@ const NewsData = () => {
           <NewsItem key={index} news={news} size="small" />
         ))}
       </div>
+      <TopCompanies />
     </div>
   );
 };
@@ -242,7 +230,7 @@ const NewsItem = ({ news }) => {
           src={highResImage}
           alt={news.title}
         />
-        <h3>{news.title}</h3>
+        <h3 width='fit-content'>{news.title}</h3>
       </a>
     </div>
   );

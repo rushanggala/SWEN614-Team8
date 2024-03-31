@@ -51,7 +51,6 @@
 
 .header h1{
   margin: 0;
-  margin-right: -250px;
 }
 
 .header, .search-container{
@@ -87,51 +86,45 @@
 .news-item a{
   text-decoration: none;
   color: black;
+  width : 100%;
 }
 
 .news-item a:hover{
   text-decoration: underline;
 }
 
-.TopCompanies {
-  margin-left: 1000px;
-}
-
-.large-news {
+.news-section{
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0; /* Adjusted from -150px */
+  justify-content: space-evenly;
+  align-items: flex-start;
+  padding-top: 10px;
 }
 
-.small-news {
+/* .TopCompanies {
+  margin-left: 1000px;
+} */
+
+
+
+/* .small-news {
   display: grid;
   align-items: center;
   justify-content: center;
-  margin-top: 0; /* Adjusted from -90px */
-  margin-right: 0; /* Adjusted from -100px */
-}
+  margin-top: 0;
+  margin-right: 0;
+} */
 
-@keyframes scrollRightToLeft {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.stock-details {
-  overflow: hidden;
-  white-space: nowrap;
-  display: inline-block;
-  animation: scrollRightToLeft 20s linear infinite;
-  display: inline-block;
-  margin-right: 50px;
-}
 
 .stock-chart-container::-webkit-scrollbar {
   display: none;
+}
+
+.stock-details a {
+  text-decoration: none; 
+}
+
+.stock-details a:hover {
+  text-decoration: underline;
 }
 
 @keyframes App-logo-spin {
