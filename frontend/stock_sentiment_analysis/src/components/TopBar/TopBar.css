@@ -31,3 +31,36 @@ h1{
     height: 90px;
     width: auto;
 }
+
+.custom-sentiment-button {
+    background-color: #f60;
+    padding: 10px 15px;
+    border-radius: 20px;
+    color: white; 
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+  }
+  
+  .custom-sentiment-button:hover {
+    background-color: #e55;
+  }
+  
+  .custom-sentiment-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .custom-textarea {
+    width: 50%;
+    margin-bottom: 20px;
+  }
+  
+  .submit-button {
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+  
