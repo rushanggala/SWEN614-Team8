@@ -1,0 +1,28 @@
+.stock-chart-container {
+    overflow: hidden;
+    background-color: #cccccc;
+}
+
+.stock-chart-container-moving{
+    display: flex;
+    align-items: center;
+    width: 220%;
+    box-sizing: border-box;
+    padding: 1em;
+    gap: 10px;
+    /* border-bottom: 2px solid #ccc; */
+    animation: scrollRightToLeft 20s linear infinite;
+}
+
+.stock-chart-container::-webkit-scrollbar {
+    display: none;
+}
+
+@keyframes scrollRightToLeft {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}

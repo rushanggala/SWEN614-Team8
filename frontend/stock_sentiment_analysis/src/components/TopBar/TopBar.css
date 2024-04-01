@@ -1,0 +1,33 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(0, 0, 0);
+    width: 100%;
+}
+
+h1{
+    color: rgb(247,105,0);
+}
+
+.header, .title-and-search{
+    display: flex;
+    align-items: center;
+}
+
+.header h1{
+    margin: 0;
+}
+
+.header, .search-container{
+    white-space: nowrap;
+}
+
+.logo-container {
+    padding-right: 5px;
+}
+
+#logo {
+    height: 90px;
+    width: auto;
+}

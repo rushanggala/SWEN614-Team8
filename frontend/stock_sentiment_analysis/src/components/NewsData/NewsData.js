@@ -3,6 +3,7 @@ import React from 'react';
 import NewsItem from '../NewsItem/NewsItem';
 import TopCompanies from '../TopCompanies/TopCompanies';
 import NewsDataJson from '../../news.json';
+import './NewsData.css';
 
 const NewsData = () => {
     const [newsItems] = React.useState(NewsDataJson);

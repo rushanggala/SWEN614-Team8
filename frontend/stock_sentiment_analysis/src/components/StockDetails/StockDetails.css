@@ -1,0 +1,30 @@
+.stock-details {
+    flex: 0 0 auto;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-right: 2px dotted #000;
+}
+
+.stock-details:last-child {
+    border-right: none;
+}
+
+.stock-details a {
+    text-decoration: none;
+}
+
+.stock-details a:hover {
+    text-decoration: underline;
+}
+
+.stock-name {
+    margin-right: 10px;
+    color: black;
+    cursor: pointer;
+}
+
+.stock-high,
+.stock-low {
+    margin-right: 10px;
+}
