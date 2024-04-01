@@ -1,0 +1,9 @@
+.top-companies-container {
+    background-color: #f8f8f8;
+    border-radius: 6px;
+    padding: 1em;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 400px;
+    max-height: 70vh;
+    overflow-y: scroll ;
+}

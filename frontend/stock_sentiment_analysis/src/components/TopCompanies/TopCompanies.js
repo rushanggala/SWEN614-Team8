@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import CompanyTicker from '../CompanyTicker/CompanyTicker';
 import { StockDataContext } from "../../context/StockDataContext";
-
+import './TopCompanies.css';
 
 const TopCompanies = () => {
     const stockData = useContext(StockDataContext);
