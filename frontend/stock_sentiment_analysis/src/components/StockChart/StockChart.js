@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import { StockDataContext } from "../../context/StockDataContext";
 import StockDetails from "../StockDetails/StockDetails";
-
+import './StockChart.css';
 const StockChart = () => {
     const stockData = useContext(StockDataContext);
 

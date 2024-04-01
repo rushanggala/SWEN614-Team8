@@ -1,0 +1,46 @@
+.company-ticker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dotted #ccc;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+.arrow-up {
+    display: inline-block;
+    -ms-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.arrow-down {
+    display: inline-block;
+}
+
+.ticker-price {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.ticker-price span {
+    font-size: 18px;
+    margin-right: 5px;
+}
+
+.ticker-name {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.ticker-name:hover {
+    color: blue;
+}

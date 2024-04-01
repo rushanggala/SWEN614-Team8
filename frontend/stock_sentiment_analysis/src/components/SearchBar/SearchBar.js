@@ -1,29 +1,40 @@
-// components/SearchBar.js
 import React, { useState } from 'react';
-
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import './SearchBar.css';
 const SearchBar = ({ onSearch }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const options = [
+        'AAPL', 'AMZN', 'AMD', 'BA', 'BX', 'COST', 'CRM', 'DIS', 'GOOG', 'GS',
+        'IBM', 'INTC', 'MS', 'NKE', 'NVDA'
+    ];
 
-    const handleSearchInput = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
-    const handleSearch = (event) => {
-        event.preventDefault();
-        onSearch(searchTerm);
+    const navigateToStockPage = (symbol) => {
+        console.log(`Navigating to stock page for ${symbol}`);
     };
 
     return (
-        <form className="search-bar" onSubmit={handleSearch}>
-            <input
-                id="searchInput"
-                type="text"
-                placeholder="Search for stock..."
-                value={searchTerm}
-                onChange={handleSearchInput}
-            />
-            <button id="searchButton" type="submit">🔍</button>
-        </form>
+        <Autocomplete
+            disableClearable
+            id="stock-search"
+            options={options}
+            getOptionLabel={(option) => option}
+            value={searchTerm}
+            onChange={(event, newValue) => {
+                setSearchTerm(newValue);
+                if (newValue) {
+                    navigateToStockPage(newValue);
+                }
+            }}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    size="small"
+                    placeholder="Search for stock..."
+                    sx={{ width: 700 }} // Set white background
+                />
+            )}
+        />
     );
 };
 
