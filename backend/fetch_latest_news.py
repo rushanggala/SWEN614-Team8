@@ -2,7 +2,12 @@ import yfinance as yf
 import json
 from config import *
 from datetime import datetime
+import boto3
 
+
+AWS_ACCESS_KEY_ID = 'AKIA3FLD2AYWN7TZUV5X'
+AWS_SECRET_ACCESS_KEY = '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'
+S3_BUCKET_NAME = 'fetch-latest-news'
 
 def clean_time(news):
     for item in news:
@@ -21,6 +26,7 @@ def fetch_news(ticker):
     return news
 
 
+
 def main():
     all_news = []
     for ticker in selected_symbols:
@@ -31,8 +37,12 @@ def main():
     news_sorted = sorted(all_news, key=lambda x: x['providerPublishTime'], reverse=True)
     latest_articles = news_sorted[:4]
 
+    s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
+
     news_json = json.dumps(latest_articles)
-    print(news_json)
+    s3.put_object(Bucket=S3_BUCKET_NAME, Key='latest_articles.json', Body=news_json)
+    #print(news_json)
 
     # return {
     #     'statusCode': 200,
