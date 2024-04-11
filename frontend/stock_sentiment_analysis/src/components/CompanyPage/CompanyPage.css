@@ -1,0 +1,13 @@
+.company-page-container-company-page {
+  background-color: #f8f8f8;
+    border-radius: 6px;
+    padding: 1em !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 180px !important;
+    max-height: 90vh;
+    overflow-y: scroll ;
+    padding-top: 20px;
+    margin-top: 15px;
+    margin-right: 20px
+}
+

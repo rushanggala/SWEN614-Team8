@@ -14,7 +14,7 @@ export const StockDataProvider = ({ children }) => {
     }, []);
 
     const stockArray = Object.entries(stockData).map(([name, data]) => ({ name, ...data }));
-
+    console.log(stockArray);
     return (
         <StockDataContext.Provider value={stockArray}>
             {children}
