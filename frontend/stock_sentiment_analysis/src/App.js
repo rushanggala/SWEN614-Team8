@@ -12,36 +12,34 @@ const App = () => {
     const [stockData, setStockData] = useState(null);
 
     useEffect(() => {
-        getStockData() // Use the function from api.js
-        .then(data => setStockData(data))
-        .catch(error => console.error('Error:', error)); // Log any fetch errors to the console
-    }, []);
+        getStockData().then(data => {
+            setStockData(data);
+        }).catch(error => {
+            console.error("Failed to fetch stock data:", error);
+        });
+    });
 
-    if (!stockData) return <div>Loading...</div>;
+    if (!stockData) {
+        return (
+            <div className="loader-container">
+                <div className="loader"></div>
+                <div className="loader-text">Loading the website...</div>
+            </div>
+        );
+    }
 
     return (
-        <StockDataProvider>
+        <StockDataProvider value={stockData}>
             <Router>
-                <Routes>
-                    <Route path="/" element={
-                        <Layout>
-                            <HomePage />
-                        </Layout>
-                    } />
-                    <Route path="/custom-sentiment" element={
-                        <Layout>
-                            <CustomSentiment />
-                        </Layout>
-                    } />
-                    <Route path="/company/:ticker" element={
-                        <Layout>
-                            <CompanyPage />
-                        </Layout>
-                    } />
-                </Routes>
+                <Layout>
+                    <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/custom-sentiment" element={<CustomSentiment />} />
+                        <Route path="/company/:ticker" element={<CompanyPage />} />
+                    </Routes>
+                </Layout>
             </Router>
         </StockDataProvider>
     );
 };
-
 export default App;
