@@ -41,7 +41,12 @@ def main():
 
 
     news_json = json.dumps(latest_articles)
+
+    with open("sample.json", "w") as outfile:
+        outfile.write(news_json)
+
     s3.put_object(Bucket=S3_BUCKET_NAME, Key='latest_articles.json', Body=news_json)
+    
     #print(news_json)
 
     # return {
