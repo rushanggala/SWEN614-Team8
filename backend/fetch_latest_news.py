@@ -12,9 +12,6 @@ def clean_time(news):
     return news
 
 
-
-
-
 def fetch_news(ticker):
     stock = yf.Ticker(ticker)
     news = stock.get_news()
@@ -31,8 +28,13 @@ def main():
     news_sorted = sorted(all_news, key=lambda x: x['providerPublishTime'], reverse=True)
     latest_articles = news_sorted[:4]
 
+
     news_json = json.dumps(latest_articles)
-    print(news_json)
+
+    with open("latest_articles.json", "w") as outfile:
+        outfile.write(news_json)
+
+    #print(news_json)
 
     # return {
     #     'statusCode': 200,
