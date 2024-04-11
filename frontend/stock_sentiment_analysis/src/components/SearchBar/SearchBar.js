@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
 import './SearchBar.css';
-const SearchBar = ({ onSearch }) => {
+
+const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [inputValue, setInputValue] = useState('');
+    const navigate = useNavigate();
     const options = [
         'AAPL', 'AMZN', 'AMD', 'BA', 'BX', 'COST', 'CRM', 'DIS', 'GOOG', 'GS',
         'IBM', 'INTC', 'MS', 'NKE', 'NVDA'
     ];
 
     const navigateToStockPage = (symbol) => {
-        console.log(`Navigating to stock page for ${symbol}`);
+        navigate(`/company/${symbol}`);
+        setSearchTerm(''); // Reset the search term
     };
 
     return (
@@ -19,9 +24,11 @@ const SearchBar = ({ onSearch }) => {
             id="stock-search"
             options={options}
             getOptionLabel={(option) => option}
-            value={searchTerm}
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+                setInputValue(newInputValue);
+            }}
             onChange={(event, newValue) => {
-                setSearchTerm(newValue);
                 if (newValue) {
                     navigateToStockPage(newValue);
                 }
@@ -29,9 +36,10 @@ const SearchBar = ({ onSearch }) => {
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    size="small"
-                    placeholder="Search for stock..."
-                    sx={{ width: 700 }} // Set white background
+                    label={inputValue ? '' : 'Search for stock...'}
+                    variant="outlined"
+                    InputProps={{ ...params.InputProps, type: 'search' }}
+                    fullWidth
                 />
             )}
         />
