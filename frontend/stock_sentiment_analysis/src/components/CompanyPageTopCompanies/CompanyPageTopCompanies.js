@@ -1,16 +1,15 @@
-// components/TopCompanies.js
 import React, { useContext } from 'react';
 import CompanyTicker from '../CompanyTicker/CompanyTicker';
 import { StockDataContext } from "../../context/StockDataContext";
-import './TopCompanies.css';
+import './CompanyPageTopCompanies.css';
 
-const TopCompanies = () => {
+const CompanyPageTopCompanies = () => {
     const stockData = useContext(StockDataContext);
     console.log(stockData)
     const topCompaniesTicker = stockData.sort((a, b) => b.current_close - a.current_close);
 
     return (
-        <div className="top-companies-container">
+        <div className="top-companies-container-company-page">
             <h2>Top Companies</h2>
             {topCompaniesTicker.map((company, index) => (
                 <CompanyTicker key={index} company={company} />
@@ -19,4 +18,4 @@ const TopCompanies = () => {
     );
 };
 
-export default TopCompanies;
+export default CompanyPageTopCompanies;
