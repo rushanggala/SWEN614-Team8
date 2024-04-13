@@ -50,8 +50,7 @@ resource "aws_instance" "fetect_news_data" {
               python3 -m venv env
               source env/bin/activate
               python -m pip install --upgrade pip
-              pip install yfinance
-              pip install boto3
+              pip install -r requirements.txt
               pip list
               echo "Running The python script"
               python fetch_latest_news.py
@@ -186,33 +185,33 @@ resource "aws_api_gateway_rest_api" "my_api" {
   description = "API to fetch Stock Prices"
 }
 
-resource "aws_api_gateway_resource" "my_api_resource" {
+resource "aws_api_gateway_resource" "stock_price_resource" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id
   parent_id   = aws_api_gateway_rest_api.my_api.root_resource_id
   path_part   = "stock-price"
 }
 
-resource "aws_api_gateway_method" "my_api_method" {
+resource "aws_api_gateway_method" "stock_price_method" {
   rest_api_id   = aws_api_gateway_rest_api.my_api.id
-  resource_id   = aws_api_gateway_resource.my_api_resource.id
+  resource_id   = aws_api_gateway_resource.stock_price_resource.id
   http_method   = "GET"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "my_api_integration" {
+resource "aws_api_gateway_integration" "stock_price_integration" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id
-  resource_id = aws_api_gateway_resource.my_api_resource.id
-  http_method = aws_api_gateway_method.my_api_method.http_method
+  resource_id = aws_api_gateway_resource.stock_price_resource.id
+  http_method = aws_api_gateway_method.stock_price_method.http_method
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri = aws_lambda_function.my_lambda.invoke_arn
 }
 
-resource "aws_api_gateway_method_response" "proxy" {
+resource "aws_api_gateway_method_response" "stock_price_proxy" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id
-  resource_id = aws_api_gateway_resource.my_api_resource.id
-  http_method = aws_api_gateway_method.my_api_method.http_method
+  resource_id = aws_api_gateway_resource.stock_price_resource.id
+  http_method = aws_api_gateway_method.stock_price_method.http_method
   status_code = "200"
 
   //cors section
@@ -221,13 +220,95 @@ resource "aws_api_gateway_method_response" "proxy" {
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
+}
 
+resource "aws_api_gateway_resource" "stock_info_resource" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  parent_id   = aws_api_gateway_rest_api.my_api.root_resource_id
+  path_part   = "stock-info"
+}
+
+resource "aws_api_gateway_method" "stock_info_method" {
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  resource_id   = aws_api_gateway_resource.stock_info_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "stock_info_integration" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.stock_info_resource.id
+  http_method = aws_api_gateway_method.stock_info_method.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri = aws_lambda_function.my_lambda.invoke_arn
+
+  request_parameters = {
+    "integration.request.querystring.ticker" = "method.request.querystring.ticker"
+  }
+}
+
+resource "aws_api_gateway_method_response" "stock_info_proxy" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.stock_info_resource.id
+  http_method = aws_api_gateway_method.stock_info_method.http_method
+  status_code = "200"
+
+  //cors section
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_resource" "stock_historical_info_resource" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  parent_id   = aws_api_gateway_rest_api.my_api.root_resource_id
+  path_part   = "stock-historical-info"
+}
+
+resource "aws_api_gateway_method" "stock_historical_info_method" {
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  resource_id   = aws_api_gateway_resource.stock_historical_info_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "stock_historical_info_integration" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.stock_historical_info_resource.id
+  http_method = aws_api_gateway_method.stock_historical_info_method.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri = aws_lambda_function.my_lambda.invoke_arn
+
+  request_parameters = {
+    "integration.request.querystring.ticker" = "method.request.querystring.ticker"
+  }
+}
+
+resource "aws_api_gateway_method_response" "stock_historical_info_proxy" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.stock_info_resource.id
+  http_method = aws_api_gateway_method.stock_info_method.http_method
+  status_code = "200"
+
+  //cors section
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
 }
 
 resource "aws_api_gateway_deployment" "my_api_deployment" {
   depends_on = [
-    aws_api_gateway_integration.my_api_integration,
-	aws_api_gateway_integration.options_integration,
+    aws_api_gateway_integration.stock_price_integration,
+    aws_api_gateway_integration.stock_info_integration,
+    aws_api_gateway_integration.options_integration,
   ]
 
   rest_api_id = aws_api_gateway_rest_api.my_api.id
@@ -236,14 +317,14 @@ resource "aws_api_gateway_deployment" "my_api_deployment" {
 
 resource "aws_api_gateway_method" "options" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id
-  resource_id = aws_api_gateway_resource.my_api_resource.id
+  resource_id = aws_api_gateway_resource.stock_price_resource.id
   http_method = "OPTIONS"
   authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "options_integration" {
   rest_api_id             = aws_api_gateway_rest_api.my_api.id
-  resource_id             = aws_api_gateway_resource.my_api_resource.id
+  resource_id             = aws_api_gateway_resource.stock_price_resource.id
   http_method             = aws_api_gateway_method.options.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
@@ -252,6 +333,32 @@ resource "aws_api_gateway_integration" "options_integration" {
   }
 }
 
-output "api_endpoint" {
-  value = "${aws_api_gateway_deployment.my_api_deployment.invoke_url}/stock-price"
+resource "aws_security_group" "rds_sg" {
+  name = "rds_sg"
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+#create a RDS Database Instance
+resource "aws_db_instance" "myinstance" {
+  engine               = "mysql"
+  identifier           = "myrdsinstance"
+  allocated_storage    =  20
+  engine_version       = "8.0.36"
+  instance_class       = "db.t3.micro"
+  username             = "admin"
+  password             = "adminPassword"
+  vpc_security_group_ids = ["${aws_security_group.rds_sg.id}"]
+  skip_final_snapshot  = true
+  publicly_accessible =  true
 }
