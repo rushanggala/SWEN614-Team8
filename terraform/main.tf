@@ -135,29 +135,29 @@ resource "aws_lambda_permission" "lambda_permission" {
   function_name = aws_lambda_function.my_lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*/*"
+  source_arn = "${aws_api_gateway_rest_api.fetch_stock.execution_arn}/*/*/*"
 }
 
-resource "aws_api_gateway_rest_api" "my_api" {
+resource "aws_api_gateway_rest_api" "fetch_stock" {
   name        = "FetchStock"
   description = "API to fetch Stock Prices"
 }
 
 resource "aws_api_gateway_resource" "stock_price_resource" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
-  parent_id   = aws_api_gateway_rest_api.my_api.root_resource_id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  parent_id   = aws_api_gateway_rest_api.fetch_stock.root_resource_id
   path_part   = "stock-price"
 }
 
 resource "aws_api_gateway_method" "stock_price_method" {
-  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  rest_api_id   = aws_api_gateway_rest_api.fetch_stock.id
   resource_id   = aws_api_gateway_resource.stock_price_resource.id
   http_method   = "GET"
   authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "stock_price_integration" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
   resource_id = aws_api_gateway_resource.stock_price_resource.id
   http_method = aws_api_gateway_method.stock_price_method.http_method
 
@@ -167,7 +167,7 @@ resource "aws_api_gateway_integration" "stock_price_integration" {
 }
 
 resource "aws_api_gateway_method_response" "stock_price_proxy" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
   resource_id = aws_api_gateway_resource.stock_price_resource.id
   http_method = aws_api_gateway_method.stock_price_method.http_method
   status_code = "200"
@@ -181,13 +181,13 @@ resource "aws_api_gateway_method_response" "stock_price_proxy" {
 }
 
 resource "aws_api_gateway_resource" "stock_info_resource" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
-  parent_id   = aws_api_gateway_rest_api.my_api.root_resource_id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  parent_id   = aws_api_gateway_rest_api.fetch_stock.root_resource_id
   path_part   = "stock-info"
 }
 
 resource "aws_api_gateway_method" "stock_info_method" {
-  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  rest_api_id   = aws_api_gateway_rest_api.fetch_stock.id
   resource_id   = aws_api_gateway_resource.stock_info_resource.id
   http_method   = "GET"
   authorization = "NONE"
@@ -198,7 +198,7 @@ resource "aws_api_gateway_method" "stock_info_method" {
 }
 
 resource "aws_api_gateway_integration" "stock_info_integration" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
   resource_id = aws_api_gateway_resource.stock_info_resource.id
   http_method = aws_api_gateway_method.stock_info_method.http_method
 
@@ -208,7 +208,7 @@ resource "aws_api_gateway_integration" "stock_info_integration" {
 }
 
 resource "aws_api_gateway_method_response" "stock_info_proxy" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
   resource_id = aws_api_gateway_resource.stock_info_resource.id
   http_method = aws_api_gateway_method.stock_info_method.http_method
   status_code = "200"
@@ -222,13 +222,13 @@ resource "aws_api_gateway_method_response" "stock_info_proxy" {
 }
 
 resource "aws_api_gateway_resource" "stock_historical_info_resource" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
-  parent_id   = aws_api_gateway_rest_api.my_api.root_resource_id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  parent_id   = aws_api_gateway_rest_api.fetch_stock.root_resource_id
   path_part   = "stock-historical-info"
 }
 
 resource "aws_api_gateway_method" "stock_historical_info_method" {
-  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  rest_api_id   = aws_api_gateway_rest_api.fetch_stock.id
   resource_id   = aws_api_gateway_resource.stock_historical_info_resource.id
   http_method   = "GET"
   authorization = "NONE"
@@ -239,7 +239,7 @@ resource "aws_api_gateway_method" "stock_historical_info_method" {
 }
 
 resource "aws_api_gateway_integration" "stock_historical_info_integration" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
   resource_id = aws_api_gateway_resource.stock_historical_info_resource.id
   http_method = aws_api_gateway_method.stock_historical_info_method.http_method
 
@@ -249,7 +249,7 @@ resource "aws_api_gateway_integration" "stock_historical_info_integration" {
 }
 
 resource "aws_api_gateway_method_response" "stock_historical_info_proxy" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
   resource_id = aws_api_gateway_resource.stock_historical_info_resource.id
   http_method = aws_api_gateway_method.stock_historical_info_method.http_method
   status_code = "200"
@@ -262,40 +262,81 @@ resource "aws_api_gateway_method_response" "stock_historical_info_proxy" {
   }
 }
 
-resource "aws_api_gateway_deployment" "my_api_deployment" {
+resource "aws_api_gateway_deployment" "fetch_stock_deployment" {
   depends_on = [
     aws_api_gateway_integration.stock_price_integration,
     aws_api_gateway_integration.stock_info_integration,
     aws_api_gateway_integration.stock_historical_info_integration,
-    aws_api_gateway_integration.options_integration,
+    aws_api_gateway_integration.options_integration_stock_historical_info,
+    aws_api_gateway_integration.options_integration_stock_info,
+    aws_api_gateway_integration.options_integration_stock_price
   ]
 
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
   stage_name  = "prod"
 }
 
-resource "aws_api_gateway_method" "options" {
-  rest_api_id   = aws_api_gateway_rest_api.my_api.id
-  resource_id   = aws_api_gateway_resource.stock_price_resource.id
-  http_method   = "OPTIONS"
+resource "aws_api_gateway_method" "options_stock_price" {
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id = aws_api_gateway_resource.stock_price_resource.id
+  http_method = "OPTIONS"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "options_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.my_api.id
+resource "aws_api_gateway_integration" "options_integration_stock_price" {
+  rest_api_id             = aws_api_gateway_rest_api.fetch_stock.id
   resource_id             = aws_api_gateway_resource.stock_price_resource.id
-  http_method             = aws_api_gateway_method.options.http_method
+  http_method             = aws_api_gateway_method.options_stock_price.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
-  request_templates       = {
+  request_templates = {
     "application/json" = "{\"statusCode\": 200}"
   }
 }
 
+resource "aws_api_gateway_method" "options_stock_info" {
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id = aws_api_gateway_resource.stock_info_resource.id
+  http_method = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "options_integration_stock_info" {
+  rest_api_id             = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id             = aws_api_gateway_resource.stock_info_resource.id
+  http_method             = aws_api_gateway_method.options_stock_info.http_method
+  integration_http_method = "OPTIONS"
+  type                    = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method" "options_stock_historical_info" {
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id = aws_api_gateway_resource.stock_historical_info_resource.id
+  http_method = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "options_integration_stock_historical_info" {
+  rest_api_id             = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id             = aws_api_gateway_resource.stock_historical_info_resource.id
+  http_method             = aws_api_gateway_method.options_stock_historical_info.http_method
+  integration_http_method = "OPTIONS"
+  type                    = "MOCK"
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+# Repeat the above resource blocks for other resources as well
+
+
 resource "aws_amplify_app" "example" {
   name                  = "example-amplify-app"
   environment_variables = {
-    "API_GATEWAY_URL" = "${aws_api_gateway_deployment.my_api_deployment.invoke_url}/"
+    "API_GATEWAY_URL" = "${aws_api_gateway_deployment.fetch_stock_deployment.invoke_url}/"
   }
   repository           = "https://github.com/rushanggala/SWEN614-Team8"
   oauth_token          = var.github_pat
