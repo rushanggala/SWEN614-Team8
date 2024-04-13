@@ -1,14 +1,13 @@
 provider "aws" {
-  region = "${var.aws_region}"
-  access_key = "${var.aws_access_key}"
-  secret_key = "${var.aws_secret_access_key}"
+  region = var.aws_region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_access_key
 }
 
 resource "aws_security_group" "news_sg" {
   name        = "news_sg"
   description = "security group for EC2 instance"
 
-  # To allow all Inbound SSH Traffic
   ingress {
     from_port = 22
     to_port = 22
@@ -16,7 +15,6 @@ resource "aws_security_group" "news_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # To allow all Outbound Traffic
   egress {
       from_port = 0
       to_port = 0
@@ -26,17 +24,15 @@ resource "aws_security_group" "news_sg" {
   
 }
 
-
-
 resource "aws_eip" "acr_eip" {
     domain = "vpc"
 }
 
-resource "aws_instance" "fetect_news_data" {
+resource "aws_instance" "fetch_news_data" {
 
   ami           = data.aws_ami.amazonlinux.id
   instance_type = var.instance_type
-  key_name      = "${local.aws_key_value_pair}"
+  key_name      = local.aws_key_value_pair
   security_groups = [aws_security_group.news_sg.name]
   user_data = <<-EOF
               #!/bin/bash
@@ -64,10 +60,10 @@ resource "aws_instance" "fetect_news_data" {
 
 # To Associate Elastic IP with EC2
 resource "aws_eip_association" "acr_eip_backend_association" {
-    instance_id = aws_instance.fetect_news_data.id
+    instance_id = aws_instance.fetch_news_data.id
     allocation_id = aws_eip.acr_eip.id
 
-    depends_on = [ aws_instance.fetect_news_data ]
+    depends_on = [ aws_instance.fetch_news_data ]
 }
 
 
@@ -82,44 +78,6 @@ resource "aws_iam_role" "iam_for_amplify" {
 resource "aws_iam_role_policy_attachment" "amplify_policy" {
     policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess-Amplify"
     role = aws_iam_role.iam_for_amplify.name
-}
-
-resource "aws_amplify_app" "example" {
-  name          = "example-amplify-app"
-  repository    = "https://github.com/rushanggala/SWEN614-Team8"
-  oauth_token   = "${var.github_pat}"
-  iam_service_role_arn = aws_iam_role.iam_for_amplify.arn
-  build_spec = <<EOF
-version: 1
-applications:
-  - backend:
-      phases:
-        build:
-          commands:
-            - '# Execute Amplify CLI with the helper script'
-            - amplifyPush --simple
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - npm ci --cache .npm --prefer-offline
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: build
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - .npm/**/*
-    appRoot: frontend/stock_sentiment_analysis
-EOF
-}
-
-resource "aws_amplify_branch" "main" {
-  app_id     = aws_amplify_app.example.id
-  branch_name = "main"
 }
 
 resource "aws_lambda_function" "my_lambda" {
@@ -333,6 +291,47 @@ resource "aws_api_gateway_integration" "options_integration" {
   }
 }
 
+resource "aws_amplify_app" "example" {
+  name          = "example-amplify-app"
+  environment_variables = {
+    "API_GATEWAY_URL" = "${aws_api_gateway_deployment.my_api_deployment.invoke_url}/"
+  }
+  repository    = "https://github.com/rushanggala/SWEN614-Team8"
+  oauth_token   = var.github_pat
+  iam_service_role_arn = aws_iam_role.iam_for_amplify.arn
+  build_spec = <<EOF
+version: 1
+applications:
+  - backend:
+      phases:
+        build:
+          commands:
+            - '# Execute Amplify CLI with the helper script'
+            - amplifyPush --simple
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci --cache .npm --prefer-offline
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: build
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - .npm/**/*
+    appRoot: frontend/stock_sentiment_analysis
+EOF
+}
+
+resource "aws_amplify_branch" "main" {
+  app_id     = aws_amplify_app.example.id
+  branch_name = "main"
+}
+
 resource "aws_security_group" "rds_sg" {
   name = "rds_sg"
   ingress {
@@ -358,7 +357,7 @@ resource "aws_db_instance" "myinstance" {
   instance_class       = "db.t3.micro"
   username             = "admin"
   password             = "adminPassword"
-  vpc_security_group_ids = ["${aws_security_group.rds_sg.id}"]
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot  = true
   publicly_accessible =  true
 }
