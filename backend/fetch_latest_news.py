@@ -73,7 +73,7 @@ def main():
         ticker_news = fetch_news(ticker)
         ticker_news = clean_time(ticker_news)
         all_news.extend(ticker_news)
-
+        print(f"{ticker} data fetched and stored successfully.")
     news_sorted = sorted(all_news, key=lambda x: x['providerPublishTime'], reverse=True)
 
     news_json = json.dumps(news_sorted, indent=4)
