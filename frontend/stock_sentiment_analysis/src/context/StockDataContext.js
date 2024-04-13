@@ -1,6 +1,6 @@
 // StockDataContext.js
 import React, { createContext, useState, useEffect } from 'react';
-import { getStockData } from '../apis/api';
+import { getStockPrice } from '../apis/api';
 
 export const StockDataContext = createContext([]);
 
@@ -8,7 +8,7 @@ export const StockDataProvider = ({ children }) => {
     const [stockData, setStockData] = useState({});
 
     useEffect(() => {
-        getStockData()
+        getStockPrice()
             .then(data => setStockData(data))
             .catch(error => console.error(error));
     }, []);
