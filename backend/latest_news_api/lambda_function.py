@@ -2,7 +2,8 @@ import yfinance as yf
 import json
 from config import *
 import pymysql
-import boto3
+import os
+
 
 def fetch_stock_price():
     stock_data = {}
@@ -59,16 +60,11 @@ def fetch_stock_historical_price(event):
             'body': 'Ticker parameter is missing in the query string'
         }
 
-    rds_client = boto3.client('rds', region_name='us-east-1')
-
-    response = rds_client.describe_db_instances(DBInstanceIdentifier='myrdsinstance')
-    endpoint = response['DBInstances'][0]['Endpoint']['Address']
-
     conn = pymysql.connect(
-        host=endpoint,
-        user="admin",
-        password="adminPassword",
-        database="HistoricalStockPrices"
+        host=os.environ.get('PG_HOST'),
+        user=os.environ.get('PG_USER'),
+        password=os.environ.get('PG_PASSWORD'),
+        database=os.environ.get('PG_DATABASE')
     )
 
     cursor = conn.cursor()

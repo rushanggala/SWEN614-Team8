@@ -36,12 +36,16 @@ resource "aws_instance" "fetch_news_data" {
   security_groups = [aws_security_group.news_sg.name]
   user_data       = <<-EOF
               #!/bin/bash
+              aws configure set aws_access_key_id "${var.aws_access_key}"
+              aws configure set aws_secret_access_key "${var.aws_secret_access_key}"
+              aws configure set default.region "${var.aws_region}"
               echo "Installing git and python..."
               sudo yum install python3 -y
               sudo yum install -y git
               echo "Cloning the git repo..."
               git clone https://${var.github_username}:${var.github_pat}@github.com/${var.github_username}/SWEN614-Team8.git
               cd SWEN614-Team8/backend
+              aws s3 cp lambda.zip s3://cloud-project-team8
               echo "creating and activating python environment"
               python3 -m venv env
               source env/bin/activate
@@ -49,9 +53,6 @@ resource "aws_instance" "fetch_news_data" {
               pip install -r requirements.txt
               pip list
               echo "Running The python script"
-              aws configure set aws_access_key_id "${var.aws_access_key}"
-              aws configure set aws_secret_access_key "${var.aws_secret_access_key}"
-              aws configure set default.region "${var.aws_region}"  
               python fetch_latest_news.py
               aws s3 cp latest_articles.json s3://cloud-project-team8
               EOF
@@ -66,10 +67,6 @@ resource "aws_eip_association" "acr_eip_backend_association" {
 
   depends_on = [aws_instance.fetch_news_data]
 }
-
-
-# To start the amplify app, API and Lambda
-
 
 resource "aws_iam_role" "iam_for_amplify" {
   name               = "iam_for_amplify"
@@ -98,26 +95,40 @@ resource "aws_lambda_function" "my_lambda" {
   layers  = [
     "arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python312:7"
   ]
+  depends_on = [time_sleep.wait_30_seconds]
+  environment {
+      variables = {
+          PG_HOST     = aws_db_instance.myinstance.address
+          PG_DATABASE = aws_db_instance.myinstance.db_name
+          PG_USER     = aws_db_instance.myinstance.username
+          PG_PASSWORD = aws_db_instance.myinstance.password
+      }
+  }
 }
 
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      }
-    }
-  ]
+  assume_role_policy = jsonencode({
+      Version = "2012-10-17",
+      Statement = [
+        {
+          Action = "sts:AssumeRole",
+          Principal = {
+            Service = "lambda.amazonaws.com"
+          },
+          Effect = "Allow",
+        },
+      ]
+  })
 }
-EOF
+
+# Attach the AWSRDSDataFullAccess policy to the IAM role
+resource "aws_iam_role_policy_attachment" "lambda_exec_rds" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess"
 }
+
 
 # Attach the AWSLambdaBasicExecutionRole policy to the IAM role
 resource "aws_iam_role_policy_attachment" "lambda_exec_basic" {
@@ -406,4 +417,10 @@ resource "aws_db_instance" "myinstance" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
   publicly_accessible    = true
+}
+
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [aws_instance.fetch_news_data]
+  create_duration = "60s"
+
 }
