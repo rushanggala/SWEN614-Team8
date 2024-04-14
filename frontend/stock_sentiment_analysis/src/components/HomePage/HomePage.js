@@ -1,22 +1,17 @@
-import React, { useEffect, useState } from 'react';
 import StockChart from "../StockChart/StockChart";
 import Footer from "../Footer/Footer";
 import NewsContent from "../NewsContent/NewsContent";
-import { getStockData } from '../../apis/api';
 import './HomePage.css';
+import {useContext} from "react";
+import {StockDataContext} from "../../context/StockDataContext";
 
 const HomePage = () => {
-    const [data, setData] = useState(null);
-    useEffect(() => {
-        getStockData()
-          .then(data => setData(data))
-          .catch(error => console.error('Error:', error));
-      }, []);
-     return (
+    const data = useContext(StockDataContext);
+    return (
         <>
-            <StockChart data={data} />
-            <NewsContent data={data} />
-            <Footer />
+            <StockChart data={data}/>
+            <NewsContent data={data}/>
+            <Footer/>
         </>
     );
 };
