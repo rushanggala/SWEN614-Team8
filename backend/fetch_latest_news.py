@@ -57,8 +57,7 @@ def fetch_news(ticker):
     return news
 
 
-def fetch_stock_historical_price_and_store(ticker):
-    conn, engine = connect_to_rds()
+def fetch_stock_historical_price_and_store(ticker, conn, engine):
     stock = yf.Ticker(ticker)
     hist = stock.history(period="max")
     create_table_if_not_exists(ticker, conn)
@@ -67,13 +66,15 @@ def fetch_stock_historical_price_and_store(ticker):
 
 def main():
     all_news = []
-
+    conn, engine = connect_to_rds()
     for ticker in selected_symbols:
-        fetch_stock_historical_price_and_store(ticker)
+        fetch_stock_historical_price_and_store(ticker, conn, engine)
         ticker_news = fetch_news(ticker)
         ticker_news = clean_time(ticker_news)
         all_news.extend(ticker_news)
         print(f"{ticker} data fetched and stored successfully.")
+    conn.close()
+    engine.dispose()
     news_sorted = sorted(all_news, key=lambda x: x['providerPublishTime'], reverse=True)
 
     news_json = json.dumps(news_sorted, indent=4)
