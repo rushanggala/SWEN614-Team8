@@ -336,8 +336,9 @@ resource "aws_api_gateway_integration" "options_integration_stock_historical_pri
 resource "aws_amplify_app" "example" {
   name                  = "example-amplify-app"
   environment_variables = {
-    "API_GATEWAY_URL" = "${aws_api_gateway_deployment.fetch_stock_deployment.invoke_url}/"
+    API_GATEWAY_URL = "${aws_api_gateway_deployment.fetch_stock_deployment.invoke_url}/${aws_api_gateway_deployment.fetch_stock_deployment.stage_name}"
   }
+  enable_branch_auto_build = true
   repository           = "https://github.com/rushanggala/SWEN614-Team8"
   oauth_token          = var.github_pat
   iam_service_role_arn = aws_iam_role.iam_for_amplify.arn
