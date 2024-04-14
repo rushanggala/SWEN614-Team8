@@ -49,12 +49,13 @@ resource "aws_instance" "fetch_news_data" {
               pip install -r requirements.txt
               pip list
               echo "Running The python script"
-              python fetch_latest_news.py
               aws configure set aws_access_key_id "${var.aws_access_key}"
               aws configure set aws_secret_access_key "${var.aws_secret_access_key}"
               aws configure set default.region "${var.aws_region}"  
+              python fetch_latest_news.py
               aws s3 cp latest_articles.json s3://cloud-project-team8
               EOF
+  depends_on      = [aws_db_instance.myinstance]
 }
 
 
@@ -277,9 +278,9 @@ resource "aws_api_gateway_deployment" "fetch_stock_deployment" {
 }
 
 resource "aws_api_gateway_method" "options_stock_price" {
-  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
-  resource_id = aws_api_gateway_resource.stock_price_resource.id
-  http_method = "OPTIONS"
+  rest_api_id   = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id   = aws_api_gateway_resource.stock_price_resource.id
+  http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
@@ -289,15 +290,15 @@ resource "aws_api_gateway_integration" "options_integration_stock_price" {
   http_method             = aws_api_gateway_method.options_stock_price.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
-  request_templates = {
+  request_templates       = {
     "application/json" = "{\"statusCode\": 200}"
   }
 }
 
 resource "aws_api_gateway_method" "options_stock_info" {
-  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
-  resource_id = aws_api_gateway_resource.stock_info_resource.id
-  http_method = "OPTIONS"
+  rest_api_id   = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id   = aws_api_gateway_resource.stock_info_resource.id
+  http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
@@ -307,15 +308,15 @@ resource "aws_api_gateway_integration" "options_integration_stock_info" {
   http_method             = aws_api_gateway_method.options_stock_info.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
-  request_templates = {
+  request_templates       = {
     "application/json" = "{\"statusCode\": 200}"
   }
 }
 
 resource "aws_api_gateway_method" "options_stock_historical_price" {
-  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
-  resource_id = aws_api_gateway_resource.stock_historical_price_resource.id
-  http_method = "OPTIONS"
+  rest_api_id   = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id   = aws_api_gateway_resource.stock_historical_price_resource.id
+  http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
@@ -325,7 +326,7 @@ resource "aws_api_gateway_integration" "options_integration_stock_historical_pri
   http_method             = aws_api_gateway_method.options_stock_historical_price.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
-  request_templates = {
+  request_templates       = {
     "application/json" = "{\"statusCode\": 200}"
   }
 }
@@ -339,10 +340,11 @@ resource "aws_amplify_app" "example" {
     API_GATEWAY_URL = "${aws_api_gateway_deployment.fetch_stock_deployment.invoke_url}/${aws_api_gateway_deployment.fetch_stock_deployment.stage_name}"
   }
   enable_branch_auto_build = true
-  repository           = "https://github.com/rushanggala/SWEN614-Team8"
-  oauth_token          = var.github_pat
-  iam_service_role_arn = aws_iam_role.iam_for_amplify.arn
-  build_spec           = <<EOF
+  depends_on               = [aws_api_gateway_deployment.fetch_stock_deployment]
+  repository               = "https://github.com/rushanggala/SWEN614-Team8"
+  oauth_token              = var.github_pat
+  iam_service_role_arn     = aws_iam_role.iam_for_amplify.arn
+  build_spec               = <<EOF
 version: 1
 applications:
   - backend:
@@ -400,6 +402,7 @@ resource "aws_db_instance" "myinstance" {
   instance_class         = "db.t3.micro"
   username               = "admin"
   password               = "adminPassword"
+  db_name                = "HistoricalStockPrices"
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
   publicly_accessible    = true
