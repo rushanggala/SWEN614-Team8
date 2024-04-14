@@ -26,7 +26,7 @@ def create_table_if_not_exists(ticker: str, connection):
 
 
 def connect_to_rds():
-    rds_client = boto3.client('rds')
+    rds_client = boto3.client('rds', region_name='us-east-1')
 
     response = rds_client.describe_db_instances(DBInstanceIdentifier='myrdsinstance')
     endpoint = response['DBInstances'][0]['Endpoint']['Address']
