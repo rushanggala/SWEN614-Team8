@@ -73,8 +73,9 @@ def main():
         print(f"{ticker} data fetched and stored successfully.")
 
     news_sorted = sorted(all_news, key=lambda x: x['providerPublishTime'], reverse=True)
+    news_sorted = list({article['uuid']: article for article in news_sorted}.values())
     news_json = json.dumps(news_sorted, indent=4)
-    with open("latest_articles.json", "w") as outfile:
+    with open("../frontend/stock_sentiment_analysis/public/latest_articles.json", "w") as outfile:
         outfile.write(news_json)
 
     conn, engine = connect_to_rds()
