@@ -45,7 +45,7 @@ resource "aws_instance" "fetch_news_data" {
               echo "Cloning the git repo..."
               git clone https://${var.github_username}:${var.github_pat}@github.com/${var.github_username}/SWEN614-Team8.git
               cd SWEN614-Team8/backend
-              aws s3 cp lambda.zip s3://cloud-project-team8
+              aws s3 cp lambda.zip s3://${var.bucket_name}
               echo "creating and activating python environment"
               python3 -m venv env
               source env/bin/activate
@@ -54,9 +54,9 @@ resource "aws_instance" "fetch_news_data" {
               pip list
               echo "Running The python script"
               python fetch_latest_news.py
-              aws s3 cp latest_articles.json s3://cloud-project-team8
+              aws s3 cp latest_articles.json s3://${var.bucket_name}
               EOF
-  depends_on      = [aws_db_instance.myinstance]
+  depends_on      = [aws_db_instance.myinstance, aws_s3_bucket.news_bucket]
 }
 
 
@@ -82,7 +82,7 @@ resource "aws_lambda_function" "my_lambda" {
   function_name = "fetch_stock_price"
 
   # The S3 bucket and object key that contains your Lambda function's deployment package
-  s3_bucket = "cloud-project-team8"
+  s3_bucket = var.bucket_name
   s3_key    = "lambda.zip"
 
   # Lambda function configuration
@@ -348,7 +348,9 @@ resource "aws_api_gateway_integration" "options_integration_stock_historical_pri
 }
 
 # Repeat the above resource blocks for other resources as well
-
+resource "aws_s3_bucket" "news_bucket" {
+    bucket = "${var.bucket_name}"
+}
 
 resource "aws_amplify_app" "example" {
   name                  = "example-amplify-app"

@@ -37,3 +37,7 @@ variable "aws_secret_access_key" {
     description = "AWS Secret Access Keys"
     default     = "<Your Root Secret Access Key>" # Change this to your Root Secret Access Key
 }
+
+variable "bucket_name" {
+    default = "api-bucket"
+}
