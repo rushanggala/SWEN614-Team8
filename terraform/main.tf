@@ -348,7 +348,7 @@ resource "aws_api_gateway_integration" "options_integration_stock_historical_pri
 resource "aws_amplify_app" "example" {
   name                  = "example-amplify-app"
   environment_variables = {
-    API_GATEWAY_URL = "${aws_api_gateway_deployment.fetch_stock_deployment.invoke_url}/${aws_api_gateway_deployment.fetch_stock_deployment.stage_name}"
+    REACT_APP_API_GATEWAY_URL = "${aws_api_gateway_deployment.fetch_stock_deployment.invoke_url}"
   }
   enable_branch_auto_build = true
   depends_on               = [aws_api_gateway_deployment.fetch_stock_deployment]
@@ -371,7 +371,8 @@ applications:
             - npm ci --cache .npm --prefer-offline
         build:
           commands:
-            - npm run build:$BUILD_ENV
+            - echo "REACT_APP_API_GATEWAY_URL = $REACT_APP_API_GATEWAY_URL" >> .env
+            - npm run build
       artifacts:
         baseDirectory: build
         files:
