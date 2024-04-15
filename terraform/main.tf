@@ -56,7 +56,7 @@ resource "aws_instance" "fetch_news_data" {
               python fetch_latest_news.py
               aws s3 cp latest_articles.json s3://${var.bucket_name}
               EOF
-  depends_on      = [aws_db_instance.myinstance, aws_s3_bucket.news_bucket]
+  depends_on      = [aws_db_instance.myinstance]
 }
 
 
@@ -138,7 +138,7 @@ resource "aws_iam_role_policy_attachment" "lambda_exec_basic" {
 
 resource "aws_iam_role_policy_attachment" "lambda_comprehend_policy_attachment" {
   role       = aws_iam_role.lambda_exec.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonComprehendFullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/ComprehendFullAccess"
 }
 
 resource "aws_cloudwatch_log_group" "my_lambda" {
@@ -159,6 +159,62 @@ resource "aws_api_gateway_rest_api" "fetch_stock" {
   name        = "FetchStock"
   description = "API to fetch Stock Prices"
 }
+
+resource "aws_api_gateway_resource" "sentiment_analysis_resource" {
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  parent_id   = aws_api_gateway_rest_api.fetch_stock.root_resource_id
+  path_part   = "sentiment-analysis"
+}
+
+resource "aws_api_gateway_method" "sentiment_analysis_method" {
+  rest_api_id   = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id   = aws_api_gateway_resource.sentiment_analysis_resource.id
+  http_method   = "PUT"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "sentiment_analysis_integration" {
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id = aws_api_gateway_resource.sentiment_analysis_resource.id
+  http_method = aws_api_gateway_method.sentiment_analysis_method.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.my_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_method_response" "sentiment_analysis_proxy" {
+  rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id = aws_api_gateway_resource.sentiment_analysis_resource.id
+  http_method = aws_api_gateway_method.sentiment_analysis_method.http_method
+  status_code = "200"
+
+  //cors section
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_method" "options_sentiment_analysis" {
+  rest_api_id   = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id   = aws_api_gateway_resource.sentiment_analysis_resource.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "options_integration_sentiment_analysis" {
+  rest_api_id             = aws_api_gateway_rest_api.fetch_stock.id
+  resource_id             = aws_api_gateway_resource.sentiment_analysis_resource.id
+  http_method             = aws_api_gateway_method.options_sentiment_analysis.http_method
+  integration_http_method = "OPTIONS"
+  type                    = "MOCK"
+  request_templates       = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
 
 resource "aws_api_gateway_resource" "stock_price_resource" {
   rest_api_id = aws_api_gateway_rest_api.fetch_stock.id
@@ -348,9 +404,9 @@ resource "aws_api_gateway_integration" "options_integration_stock_historical_pri
 }
 
 # Repeat the above resource blocks for other resources as well
-resource "aws_s3_bucket" "news_bucket" {
-    bucket = "${var.bucket_name}"
-}
+#resource "aws_s3_bucket" "news_bucket" {
+#    bucket = "${var.bucket_name}"
+#}
 
 resource "aws_amplify_app" "example" {
   name                  = "example-amplify-app"

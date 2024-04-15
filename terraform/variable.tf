@@ -5,7 +5,7 @@ variable "instance_type" {
 }
 
 locals {
-    aws_key_value_pair = "SWEN_614_KEY.pem" # Change this to your Key-Value Pair
+    aws_key_value_pair = "SWEN_614_KEY" # Change this to your Key-Value Pair
   }
 
 variable "github_username" {
@@ -35,9 +35,9 @@ variable "aws_access_key" {
 variable "aws_secret_access_key" {
     type        = string
     description = "AWS Secret Access Keys"
-    default     = "AKIAVRUVSEAOE2ORAXIX" # Change this to your Root Secret Access Key
+    default     = "CAaXxKR8+h2za1JZZvaVxz8DimozN/yfo8wHE4Yo" # Change this to your Root Secret Access Key
 }
 
 variable "bucket_name" {
-    default = "api-bucket"
+    default = "cloud-project-team8"
 }
