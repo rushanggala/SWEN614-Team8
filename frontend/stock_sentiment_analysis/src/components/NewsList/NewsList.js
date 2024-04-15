@@ -1,0 +1,45 @@
+import React, {useState} from "react";
+import './NewsList.css';
+
+const NewsList = ({stockNews, ticker}) => {
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+    const stockArticles = stockNews.filter(article =>
+        article.relatedTickers.includes(ticker)
+    );
+
+    return (
+        <div className="news-list-container">
+            <h1>NewsList</h1>
+            <div className="news-list">
+                {stockArticles.map((article, index) => {
+                    const thumbnailUrl = article.thumbnail?.resolutions[0]?.url;
+                    const isHovered = hoveredIndex === index;
+                    return (
+
+                            <div className={`news-item ${isHovered ? 'hovered' : ''}`}
+                                 onMouseEnter={() => setHoveredIndex(index)}
+                                 onMouseLeave={() => setHoveredIndex(null)}>
+                                <div className="thumbnail-container">
+                                    <a href={article.link} target="_blank" rel="noreferrer">
+                                        <img src={thumbnailUrl} alt=""/>
+                                    </a>
+                                </div>
+                                <div className="content-container">
+                                    <a href={article.link} target="_blank" rel="noreferrer">
+                                        <span>{article.title}</span>
+                                    </a>
+                                        <p>{article.publisher}</p>
+                                </div>
+                                <div className="sentiment-container">
+                                    <a className="get-sentiment-button">Get Sentiment</a>
+                                </div>
+                            </div>
+                );
+                })}
+            </div>
+        </div>
+
+    );
+}
+
+export default NewsList;

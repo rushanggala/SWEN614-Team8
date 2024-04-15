@@ -7,6 +7,7 @@ import {StockDataContext} from "../../context/StockDataContext";
 import {useParams} from 'react-router-dom';
 import {getStockInfo, getStockHistoricalInfo} from "../../apis/api";
 import StockHistoryChart from "../StockHistoryChart/StockHistoryChart";
+import NewsList from "../NewsList/NewsList";
 
 const CompanyPage = () => {
     const {ticker} = useParams();
@@ -48,8 +49,9 @@ const CompanyPage = () => {
                 <div className="content">
                     <div className="news-container">
                         <div className="articles-section">
-                            <StockTable companyData={stockInfo}/>
+                            <StockTable companyData={stockInfo} />
                             <StockHistoryChart stockHistory={historicalData}/>
+                            <NewsList stockNews={stockNews} ticker={ticker}/>
                         </div>
                         <div className="quick-infos-section">
                             <TopCompanies stockArray={stockArray}/>

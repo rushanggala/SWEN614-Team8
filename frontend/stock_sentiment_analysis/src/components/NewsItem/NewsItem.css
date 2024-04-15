@@ -9,6 +9,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 15px;
 }
 
 /* .article-card img */
@@ -68,4 +69,9 @@
 .article-card .data-section .vertical-centered {
     display: flex;
     align-items: center;
+}
+
+.title a {
+    color: black; /* Change the color to black */
+    text-decoration: none; /* Remove underline */
 }
