@@ -1,18 +1,18 @@
-// components/HomePage.js
-import React from 'react';
-import TopBar from "../TopBar/TopBar"; 
 import StockChart from "../StockChart/StockChart";
 import Footer from "../Footer/Footer";
 import NewsContent from "../NewsContent/NewsContent";
+import './HomePage.css';
+import {useContext} from "react";
+import {StockDataContext} from "../../context/StockDataContext";
 
 const HomePage = () => {
+    const data = useContext(StockDataContext);
     return (
-        <div>
-            <StockChart />
-            <NewsContent />
-            <Footer />
-        </div>
-        
+        <>
+            <StockChart data={data}/>
+            <NewsContent data={data}/>
+            <Footer/>
+        </>
     );
 };
 

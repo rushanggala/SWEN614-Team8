@@ -6,6 +6,7 @@ import './TopCompanies.css';
 
 const TopCompanies = () => {
     const stockData = useContext(StockDataContext);
+    console.log(stockData)
     const topCompaniesTicker = stockData.sort((a, b) => b.current_close - a.current_close);
 
     return (

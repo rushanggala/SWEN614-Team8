@@ -3,15 +3,19 @@
     background-color: #cccccc;
 }
 
-.stock-chart-container-moving{
+.stock-chart-container-moving {
     display: flex;
     align-items: center;
     width: 220%;
     box-sizing: border-box;
     padding: 1em;
     gap: 10px;
-    /* border-bottom: 2px solid #ccc; */
     animation: scrollRightToLeft 20s linear infinite;
+}
+
+/* Add this to pause the animation on hover */
+.stock-chart-container-moving:hover {
+    animation-play-state: paused;
 }
 
 .stock-chart-container::-webkit-scrollbar {
