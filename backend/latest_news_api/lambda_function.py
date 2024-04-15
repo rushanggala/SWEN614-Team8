@@ -81,24 +81,45 @@ def fetch_stock_historical_price(event):
     }
 
 
+def analyze_sentiment(text, comprehend):
+    # Split text into chunks of 5000 characters or less
+    chunks = [text[i:i + 5000] for i in range(0, len(text), 5000)]
+
+    # Analyze sentiment for each chunk
+    sentiment_scores = []
+    for chunk in chunks:
+        response = comprehend.detect_sentiment(Text=chunk, LanguageCode='en')
+        sentiment_scores.append(response['SentimentScore'])
+
+    # Aggregate sentiment scores (e.g., calculate average)
+    aggregated_score = aggregate_sentiment_scores(sentiment_scores)
+    return aggregated_score
+
+
+def aggregate_sentiment_scores(scores):
+    # Aggregate sentiment scores (e.g., calculate average)
+    # Example: Calculate average of positive, negative, neutral, and mixed scores
+    num_chunks = len(scores)
+    avg_positive = sum(score['Positive'] for score in scores) / num_chunks
+    avg_negative = sum(score['Negative'] for score in scores) / num_chunks
+    avg_neutral = sum(score['Neutral'] for score in scores) / num_chunks
+    avg_mixed = sum(score['Mixed'] for score in scores) / num_chunks
+
+    return {
+        'Positive': avg_positive,
+        'Negative': avg_negative,
+        'Neutral': avg_neutral,
+        'Mixed': avg_mixed
+    }
+
+
 def get_sentiment_score(article_url):
     article = Article(article_url)
     article.download()
     article.parse()
 
     comprehend = boto3.client('comprehend')
-
-    response = comprehend.detect_sentiment(
-        Text=article.text,
-        LanguageCode='en'
-    )
-
-    sentiment_score = {
-        'positive': response['SentimentScore']['Positive'],
-        'negative': response['SentimentScore']['Negative'],
-        'neutral': response['SentimentScore']['Neutral'],
-        'mixed': response['SentimentScore']['Mixed']
-    }
+    sentiment_score = analyze_sentiment(article.text, comprehend)
     return sentiment_score
 
 

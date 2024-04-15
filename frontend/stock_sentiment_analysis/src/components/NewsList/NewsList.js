@@ -4,19 +4,27 @@ import {getSentimentAnalysis} from "../../apis/api";
 
 const NewsList = ({stockNews, ticker}) => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [sentimentResult, setSentimentResult] = useState({});
     const stockArticles = stockNews.filter(article =>
         article.relatedTickers.includes(ticker)
     );
-    const handleSentimentAnalysis = (url) => {
-        getSentimentAnalysis(url)
-        .then(data => {
-            console.log('Sentiment analysis result:', data);
-        })
-        .catch(error => {
-            console.error('Error performing sentiment analysis:', error);
-            // Handle the error here
-        });
+
+    const handleSentimentAnalysis = (article) => {
+        if (article.publiser === 'Yahoo Finance') {
+            const url = article.link;
+            getSentimentAnalysis(url)
+                .then(data => {
+                    setSentimentResult(data);
+                    console.log('Sentiment analysis result:', data);
+                })
+                .catch(error => {
+                    console.error('Error performing sentiment analysis:', error);
+                });
+        } else {
+            console.log('Sentiment analysis is not available for this article');
+        }
     };
+
     return (
         <div className="news-list-container">
             <h1>NewsList</h1>

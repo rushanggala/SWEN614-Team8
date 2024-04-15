@@ -2,10 +2,10 @@
 import axios from 'axios';
 
 // For development
-// const apiUrl = "http://127.0.0.1:5000";
+const apiUrl = "http://127.0.0.1:5000";
 
 //For production
-const apiURL = process.env.REACT_APP_API_GATEWAY_URL;
+// const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 export const getStockHistoricalInfo = (stockSymbol) => {
     let url = `${apiUrl}/stock-historical-price?ticker=${stockSymbol}`;
     console.log(url);
