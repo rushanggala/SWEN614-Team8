@@ -10,7 +10,7 @@ const NewsList = ({stockNews, ticker}) => {
     );
 
     const handleSentimentAnalysis = (article) => {
-        if (article.publiser === 'Yahoo Finance') {
+        if (article.publisher === 'Yahoo Finance') {
             const url = article.link;
             getSentimentAnalysis(url)
                 .then(data => {
