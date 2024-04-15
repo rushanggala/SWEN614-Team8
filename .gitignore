@@ -5,3 +5,4 @@ node_modules/
 /terraform/*
 !/terraform/main.tf
 !/terraform/data.tf
+/backend/__pycache__/

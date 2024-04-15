@@ -5,7 +5,7 @@ import axios from 'axios';
 const apiUrl = "http://127.0.0.1:5000";
 
 //For production
-// const apiURL = process.env.REACT_APP_API_GATEWAY_URL;
+// const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 export const getStockHistoricalInfo = (stockSymbol) => {
     let url = `${apiUrl}/stock-historical-price?ticker=${stockSymbol}`;
     console.log(url);
@@ -39,6 +39,20 @@ export const getStockPrice = () => {
     let url = `${apiUrl}/stock-price`;
     console.log(url);
     return axios.get(url)
+        .then((response) => {
+            console.log(response.data);
+            return response.data;
+        })
+        .catch((error) => {
+            console.error(error);
+            throw new Error('Something went wrong');
+        });
+}
+
+export const getSentimentAnalysis = (articleUrl) => {
+    let url = `${apiUrl}/sentiment-analysis`;
+    console.log(url);
+    return axios.post(url, { url: articleUrl })
         .then((response) => {
             console.log(response.data);
             return response.data;

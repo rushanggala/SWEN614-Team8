@@ -1,11 +1,29 @@
 import React, {useState} from "react";
 import './NewsList.css';
+import {getSentimentAnalysis} from "../../apis/api";
 
 const NewsList = ({stockNews, ticker}) => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [sentimentResult, setSentimentResult] = useState({});
     const stockArticles = stockNews.filter(article =>
         article.relatedTickers.includes(ticker)
     );
+
+    const handleSentimentAnalysis = (article) => {
+        if (article.publiser === 'Yahoo Finance') {
+            const url = article.link;
+            getSentimentAnalysis(url)
+                .then(data => {
+                    setSentimentResult(data);
+                    console.log('Sentiment analysis result:', data);
+                })
+                .catch(error => {
+                    console.error('Error performing sentiment analysis:', error);
+                });
+        } else {
+            console.log('Sentiment analysis is not available for this article');
+        }
+    };
 
     return (
         <div className="news-list-container">
@@ -16,25 +34,27 @@ const NewsList = ({stockNews, ticker}) => {
                     const isHovered = hoveredIndex === index;
                     return (
 
-                            <div className={`news-item ${isHovered ? 'hovered' : ''}`}
-                                 onMouseEnter={() => setHoveredIndex(index)}
-                                 onMouseLeave={() => setHoveredIndex(null)}>
-                                <div className="thumbnail-container">
-                                    <a href={article.link} target="_blank" rel="noreferrer">
-                                        <img src={thumbnailUrl} alt=""/>
-                                    </a>
-                                </div>
-                                <div className="content-container">
-                                    <a href={article.link} target="_blank" rel="noreferrer">
-                                        <span>{article.title}</span>
-                                    </a>
-                                        <p>{article.publisher}</p>
-                                </div>
-                                <div className="sentiment-container">
-                                    <a className="get-sentiment-button">Get Sentiment</a>
-                                </div>
+                        <div className={`news-item ${isHovered ? 'hovered' : ''}`}
+                             onMouseEnter={() => setHoveredIndex(index)}
+                             onMouseLeave={() => setHoveredIndex(null)}>
+                            <div className="thumbnail-container">
+                                <a href={article.link} target="_blank" rel="noreferrer">
+                                    <img src={thumbnailUrl} alt=""/>
+                                </a>
                             </div>
-                );
+                            <div className="content-container">
+                                <a href={article.link} target="_blank" rel="noreferrer">
+                                    <span>{article.title}</span>
+                                </a>
+                                <p>{article.publisher}</p>
+                            </div>
+                            <div className="sentiment-container">
+                                <button className="get-sentiment-button"
+                                        onClick={() => handleSentimentAnalysis(article.link)}>Get Sentiment
+                                </button>
+                            </div>
+                        </div>
+                    );
                 })}
             </div>
         </div>

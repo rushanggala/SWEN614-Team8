@@ -41,6 +41,7 @@
 }
 
 .get-sentiment-button {
+    cursor: pointer;
     background-color: #f60;
     padding: 10px 15px;
     border-radius: 20px;

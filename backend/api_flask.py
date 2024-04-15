@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
 import yfinance as yf
 from config import *
+from flask_cors import CORS
+from newspaper import Article
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/stock-price', methods=['GET'])
@@ -53,9 +56,19 @@ def fetch_stock_historical_price():
     historical_price_data = stock.history(period="max")
     historical_price_data.reset_index(inplace=True)
     historical_price_dict = historical_price_data.to_dict(orient='records')
-    print(historical_price_dict)
     return jsonify(historical_price_dict), 200
 
+
+@app.route('/sentiment-analysis', methods=['POST'])
+def sentiment_analysis():
+    data = request.json
+
+    url = data['url']
+    article = Article(url)
+    article.download()
+    article.parse()
+    print(article.text)
+    return jsonify(data), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
