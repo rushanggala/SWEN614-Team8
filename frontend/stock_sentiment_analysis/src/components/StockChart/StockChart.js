@@ -5,12 +5,12 @@ import StockDetails from "../StockDetails/StockDetails";
 import './StockChart.css';
 
 const StockChart = () => {
-    const stockData = useContext(StockDataContext);
+    const {stockArray, stockNews} = useContext(StockDataContext);
 
     return (
         <div className="stock-chart-container">
             <div className="stock-chart-container-moving">
-                {stockData.map((stock, index) => (
+                {stockArray.map((stock, index) => (
                     <StockDetails key={index} stock={stock} />
                 ))}
             </div>

@@ -9,8 +9,8 @@ const HomePage = () => {
     const data = useContext(StockDataContext);
     return (
         <>
-            <StockChart data={data}/>
-            <NewsContent data={data}/>
+            <StockChart />
+            <NewsContent />
             <Footer/>
         </>
     );

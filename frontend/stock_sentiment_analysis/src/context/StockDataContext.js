@@ -7,6 +7,27 @@ export const StockDataContext = createContext([]);
 export const StockDataProvider = ({children}) => {
     const [stockData, setStockData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
+    const [stockNews, setStockNews] = useState([]);
+
+    useEffect(() => {
+    const fetchData = () => {
+        fetch('/latest_articles.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setStockNews(data);
+                console.log('Data fetched');
+            })
+            .catch(error => {
+                console.error('Error fetching news data:', error);
+            });
+    };
+    fetchData();
+}, []);
 
     useEffect(() => {
         getStockPrice()
@@ -15,6 +36,7 @@ export const StockDataProvider = ({children}) => {
                 setIsLoading(false);
             })
             .catch(error => {
+                setStockData({})
                 console.error(error);
                 setIsLoading(false);
             });
@@ -32,7 +54,7 @@ export const StockDataProvider = ({children}) => {
     const stockArray = Object.entries(stockData).map(([name, data]) => ({name, ...data}));
     console.log(stockArray);
     return (
-        <StockDataContext.Provider value={stockArray}>
+        <StockDataContext.Provider value={{ stockArray, stockNews }}>
             {children}
         </StockDataContext.Provider>
     );

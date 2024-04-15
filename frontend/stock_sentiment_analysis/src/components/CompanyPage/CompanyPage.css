@@ -1,6 +1,4 @@
-.company-page-container-company-page {
-  display: flex;
-  justify-content: space-between; 
-  align-items: start; 
-  flex-wrap: wrap;
+.MuiTableCell-root {
+    border-bottom: none;
+    padding: 2px !important;
 }

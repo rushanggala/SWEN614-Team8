@@ -8,6 +8,8 @@
     "@emotion/styled": "^11.11.5",
     "@material-ui/core": "^4.12.4",
     "@mui/material": "^5.15.14",
+    "@syncfusion/ej2-base": "^25.1.35",
+    "@syncfusion/ej2-react-charts": "^25.1.39",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

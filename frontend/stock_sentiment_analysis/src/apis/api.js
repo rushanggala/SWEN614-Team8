@@ -1,8 +1,13 @@
 // api.js
 import axios from 'axios';
 
+// For development
+const apiUrl = "http://127.0.0.1:5000";
+
+//For production
+// const apiURL = process.env.REACT_APP_API_GATEWAY_URL;
 export const getStockHistoricalInfo = (stockSymbol) => {
-    let url = `${process.env.REACT_APP_API_GATEWAY_URL}/stock-historical-info?ticker=${stockSymbol}`;
+    let url = `${apiUrl}/stock-historical-price?ticker=${stockSymbol}`;
     console.log(url);
 
     return axios.get(url)
@@ -17,7 +22,7 @@ export const getStockHistoricalInfo = (stockSymbol) => {
 
 }
 export const getStockInfo = (stockSymbol) => {
-    let url = `${process.env.REACT_APP_API_GATEWAY_URL}/stock-info?ticker=${stockSymbol}`;
+    let url = `${apiUrl}/stock-info?ticker=${stockSymbol}`;
     console.log(url);
 
     return axios.get(url)
@@ -31,7 +36,7 @@ export const getStockInfo = (stockSymbol) => {
         });
 }
 export const getStockPrice = () => {
-    let url = `${process.env.REACT_APP_API_GATEWAY_URL}/stock-price`;
+    let url = `${apiUrl}/stock-price`;
     console.log(url);
     return axios.get(url)
         .then((response) => {

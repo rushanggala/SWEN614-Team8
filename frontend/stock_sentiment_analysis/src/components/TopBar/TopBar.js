@@ -10,9 +10,9 @@ const TopBar = () => {
 
     return (
         <div className="header">
-            <a href="/">
-                <img src="download.png" alt="Logo" id="logo"/>
-            </a>
+            <Link to="/">
+                <img src="/download.png" alt="Logo" id="logo"/>
+            </Link>
             <SearchBar />
             <nav className="custom-navbar">
             <Link to={isCustomSentimentPage ? "/" : "/custom-sentiment"} className="custom-sentiment-button">

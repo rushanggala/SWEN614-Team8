@@ -1,106 +1,120 @@
-import React, { useState, useEffect } from 'react';
-import './stockTable.css'; 
+import React from 'react';
+import './StockTable.css';
+import {Table, TableBody, TableRow, TableCell, TableContainer} from '@mui/material';
+import {Grid} from "@mui/material";
 
-const StockTable = () => {
-  const [companyData, setCompanyData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/stock_data.json');
-        const data = await response.json();
-        setCompanyData(data);
-      } catch (error) {
-        console.error('Error fetching company data:', error);
-        setError('Failed to fetch company data');
-      }
-      setLoading(false);
+const StockTable = ({companyData}) => {
+    const formatMarketCap = (value) => {
+        if (value >= 1e12) {
+            return `${(value / 1e12).toFixed(1)} trillion`;
+        } else if (value >= 1e9) {
+            return `${(value / 1e9).toFixed(1)} billion`;
+        } else if (value >= 1e6) {
+            return `${(value / 1e6).toFixed(1)} million`;
+        } else {
+            return value.toString();
+        }
     };
 
-    fetchData();
-  }, []);
+    return (
+        <div className="stock-table-section">
+            <h1>{companyData.longName}</h1>
+            <div className="stock-table-container">
+                <Grid container spacing={4}>
+                    <Grid item xs={6}>
+                        <TableContainer>
+                            <Table>
+                                <TableBody>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Long Name:</TableCell>
+                                        <TableCell><strong>{companyData.longName}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Open:</TableCell>
+                                        <TableCell><strong>{companyData.open}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Symbol:</TableCell>
+                                        <TableCell><strong>{companyData.symbol}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Bid:</TableCell>
+                                        <TableCell><strong>{companyData.bid} x {companyData.bidSize}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Industry:</TableCell>
+                                        <TableCell><strong>{companyData.industry}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Ask:</TableCell>
+                                        <TableCell><strong>{companyData.ask} x {companyData.askSize}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Days Range:</TableCell>
+                                        <TableCell><strong>{companyData.dayLow} - {companyData.dayHigh}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>52 Week Range:</TableCell>
+                                        <TableCell><strong>{companyData.fiftyTwoWeekLow} - {companyData.fiftyTwoWeekHigh}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Ex-Dividend Date:</TableCell>
+                                        <TableCell><strong>{new Date(companyData.exDividendDate * 1000).toLocaleDateString()}</strong></TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
 
+                        </TableContainer>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TableContainer>
+                            <Table>
+                                <TableBody>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Volume:</TableCell>
+                                        <TableCell><strong>{companyData.volume}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Avg Volume:</TableCell>
+                                        <TableCell><strong>{companyData.averageVolume}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Market Cap:</TableCell>
+                                        <TableCell><strong>${formatMarketCap(companyData.marketCap)}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Beta (5Y Monthly):</TableCell>
+                                        <TableCell><strong>{companyData.beta}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>PE Ratio (TTM):</TableCell>
+                                        <TableCell><strong>{companyData.trailingPE}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>EPS (TTM):</TableCell>
+                                        <TableCell><strong>{companyData.trailingEps}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Earnings Date:</TableCell>
+                                        <TableCell><strong>{companyData.earningsDate}</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>Forward Dividend & Yield:</TableCell>
+                                        <TableCell><strong>{companyData.dividendRate} ({(companyData.dividendYield * 100).toFixed(2)}%)</strong></TableCell>
+                                    </TableRow>
+                                    <TableRow style={{backgroundColor: 'transparent'}}>
+                                        <TableCell>1y Target Est:</TableCell>
+                                        <TableCell><strong>{companyData.twoHundredDayAverage}</strong></TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
 
-  const formatMarketCap = (value) => {
-    if (value >= 1e12) {
-      return `${(value / 1e12).toFixed(1)} trillion`;
-    } else if (value >= 1e9) {
-      return `${(value / 1e9).toFixed(1)} billion`;
-    } else if (value >= 1e6) {
-      return `${(value / 1e6).toFixed(1)} million`;
-    } else {
-      return value.toString();
-    }
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
-  return (
-    <div className="stock-table-container">
-      <h1>Company Information</h1>
-      <table>
-        <tbody>
-          <tr>
-              <td><strong>Long Name:</strong></td>
-              <td>{companyData.longName}</td>
-              <td><strong>Open:</strong></td>
-              <td>{companyData.open}</td>
-            </tr>
-            <tr>
-              <td><strong>Symbol:</strong></td>
-              <td>{companyData.symbol}</td>
-              <td><strong>Bid:</strong></td>
-              <td>{companyData.bid} x {companyData.bidSize}</td>
-            </tr>
-            <tr>
-              <td><strong>Industry:</strong></td>
-              <td>{companyData.industry}</td>
-              <td><strong>Ask:</strong></td>
-              <td>{companyData.ask} x {companyData.askSize}</td>
-            </tr>
-            <tr>
-              <td><strong>Days Range:</strong></td>
-              <td>{companyData.dayLow} - {companyData.dayHigh}</td>
-              <td><strong>52 Week Range:</strong></td>
-              <td>{companyData.fiftyTwoWeekLow} - {companyData.fiftyTwoWeekHigh}</td>
-            </tr>
-            <tr>
-              <td><strong>Volume:</strong></td>
-              <td>{companyData.volume}</td>
-              <td><strong>Avg Volume:</strong></td>
-              <td>{companyData.averageVolume}</td>
-            </tr>
-            <tr>
-              <td><strong>Market Cap:</strong></td>
-              <td>${formatMarketCap(companyData.marketCap)}</td>
-              <td><strong>Beta (5Y Monthly):</strong></td>
-              <td>{companyData.beta}</td>
-            </tr>
-            <tr>
-              <td><strong>PE Ratio (TTM):</strong></td>
-              <td>{companyData.trailingPE}</td>
-              <td><strong>EPS (TTM):</strong></td>
-              <td>{companyData.trailingEps}</td>
-            </tr>
-            <tr>
-              <td><strong>Earnings Date:</strong></td>
-              <td>{companyData.earningsDate}</td>
-              <td><strong>Forward Dividend & Yield:</strong></td>
-              <td>{companyData.dividendRate} ({(companyData.dividendYield * 100).toFixed(2)}%)</td>
-            </tr>
-            <tr>
-              <td><strong>Ex-Dividend Date:</strong></td>
-              <td>{new Date(companyData.exDividendDate * 1000).toLocaleDateString()}</td>
-              <td><strong>1y Target Est:</strong></td>
-              <td>{companyData.twoHundredDayAverage}</td>
-            </tr>
-          </tbody>
-        </table>
-    </div>
-  );
+                        </TableContainer>
+                    </Grid>
+                </Grid>
+            </div>
+        </div>
+    );
 };
 
 export default StockTable;
