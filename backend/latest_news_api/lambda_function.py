@@ -3,6 +3,8 @@ import json
 from config import *
 import pymysql
 import os
+from newspaper import Article
+import boto3
 
 
 def fetch_stock_price():
@@ -79,6 +81,27 @@ def fetch_stock_historical_price(event):
     }
 
 
+def get_sentiment_score(article_url):
+    article = Article(article_url)
+    article.download()
+    article.parse()
+
+    comprehend = boto3.client('comprehend')
+
+    response = comprehend.detect_sentiment(
+        Text=article.text,
+        LanguageCode='en'
+    )
+
+    sentiment_score = {
+        'positive': response['SentimentScore']['Positive'],
+        'negative': response['SentimentScore']['Negative'],
+        'neutral': response['SentimentScore']['Neutral'],
+        'mixed': response['SentimentScore']['Mixed']
+    }
+    return sentiment_score
+
+
 def lambda_handler(event, context):
     print("Event", event)
     if event['path'] == '/stock-price':
@@ -87,6 +110,22 @@ def lambda_handler(event, context):
         return fetch_stock_info(event)
     elif event['path'] == '/stock-historical-price':
         return fetch_stock_historical_price(event)
+    elif event['path'] == '/sentiment-analysis':
+        body = json.loads(event['body'])
+        article_url = body.get('url')
+
+        if not article_url:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'error': 'URL parameter is missing'})
+            }
+
+        sentiment_score = get_sentiment_score(article_url)
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps(sentiment_score)
+        }
     else:
         return {
             'statusCode': 404,

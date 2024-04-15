@@ -1,9 +1,20 @@
 // components/NewsItem.js
 import React from 'react';
 import './NewsItem.css';
+import {getSentimentAnalysis} from "../../apis/api";
 
 function NewsItem({article}) {
     const img = article.thumbnail?.resolutions[0]?.url || 'https://via.placeholder.com/';
+    const handleSentimentAnalysis = (url) => {
+        getSentimentAnalysis(url)
+            .then(data => {
+                console.log('Sentiment analysis result:', data);
+            })
+            .catch(error => {
+                console.error('Error performing sentiment analysis:', error);
+                // Handle the error here
+            });
+    };
     return (
         <div className="StyledContainer">
             <div className="article-card">
@@ -17,7 +28,9 @@ function NewsItem({article}) {
                 </div>
                 <div className="divider"/>
                 <div className="description">
-                    <a className="get-sentiment-button">Get Sentiment</a>
+                    <button className="get-sentiment-button" onClick={() => handleSentimentAnalysis(article.link)}>Get
+                        Sentiment
+                    </button>
                 </div>
             </div>
         </div>

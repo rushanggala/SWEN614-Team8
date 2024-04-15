@@ -136,6 +136,11 @@ resource "aws_iam_role_policy_attachment" "lambda_exec_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_comprehend_policy_attachment" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonComprehendFullAccess"
+}
+
 resource "aws_cloudwatch_log_group" "my_lambda" {
   name              = "/aws/lambda/${aws_lambda_function.my_lambda.function_name}"
   retention_in_days = 14
