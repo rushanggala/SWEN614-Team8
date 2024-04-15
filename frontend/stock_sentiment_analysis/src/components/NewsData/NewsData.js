@@ -1,53 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, {useContext} from 'react';
 import NewsItem from '../NewsItem/NewsItem';
 import TopCompanies from '../TopCompanies/TopCompanies';
-import NewsDataJson from '../../news.json';
 import './NewsData.css';
+import {StockDataContext} from "../../context/StockDataContext";
 
 const NewsData = () => {
-    const [shuffledNewsItems, setShuffledNewsItems] = useState([]);
-
-    const shuffleNewsItems = (newsItems) => {
-        let currentIndex = newsItems.length, randomIndex;
-
-        while (currentIndex !== 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-
-            [newsItems[currentIndex], newsItems[randomIndex]] = [
-            newsItems[randomIndex], newsItems[currentIndex]];
-        }
-
-        return newsItems;
-    };
-
-    useEffect(() => {
-
-        const shuffleAndSetNewsItems = () => {
-            setShuffledNewsItems(shuffleNewsItems([...NewsDataJson]));
-        };
-
-        shuffleAndSetNewsItems();
-
-        const intervalId = setInterval(shuffleAndSetNewsItems, 4000);
-
-        return () => clearInterval(intervalId);
-    }, []);
-
-    const largeNewsItem = shuffledNewsItems[0];
-    const smallNewsItems = shuffledNewsItems.slice(1, 3);
-
+    const {stockArray, stockNews} = useContext(StockDataContext);
+    const top4News = stockNews.slice(0, 4);
+    console.log(top4News);
     return (
-        <div className="news-section">
-            <div className="large-news">
-                {largeNewsItem && <NewsItem news={largeNewsItem} />}
+        <div className="homepage-container"> {/* Add className for the container */}
+            <div className="content">
+                <div className="news-container">
+                    <div className="articles-section">
+                        {top4News.map((article, index) => (
+                            <NewsItem key={index} article={article}/>
+                        ))}
+                    </div>
+                    <div className="quick-infos-section">
+                        <TopCompanies stockArray={stockArray}/>
+                    </div>
+                </div>
             </div>
-            <div className="small-news">
-                {smallNewsItems.map((news, index) => (
-                    <NewsItem key={index} news={news} size="small" />
-                ))}
-            </div>
-            <TopCompanies />
         </div>
     );
 };

@@ -1,0 +1,71 @@
+/* StyledContainer */
+.StyledContainer {
+    margin: 0px 15px 15px 15px;
+}
+
+/* .article-card */
+.article-card {
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* .article-card img */
+.article-card img {
+    width: 400px;
+    height: 250px;
+}
+
+/* .article-card .title */
+.article-card .title {
+    font-family: "Times New Roman", serif;
+    padding: 5px 10px 0px 10px;
+    font-size: 25px;
+    text-align: center;
+}
+
+/* .article-card .divider */
+.article-card .divider {
+    margin-top: 13px;
+    margin-bottom: 3px;
+    height: 1px;
+    width: 45%;
+    background-color: rgba(0, 0, 0, 0.2) /* Insert light black color value here */;
+    border-radius: 10px;
+}
+
+/* .article-card .description */
+.article-card .description {
+    font-family: "Times New Roman", serif;
+    text-align: center;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 300;
+    color: black;
+}
+
+/* .article-card .data-section */
+.article-card .data-section {
+    display: flex;
+    width: 70%;
+    justify-content: space-around;
+    margin-bottom: 30px;
+}
+
+/* .article-card .data-section span */
+.article-card .data-section span {
+    padding-left: 2px;
+    font-size: 13px;
+}
+
+/* .article-card .data-section .more */
+.article-card .data-section .more {
+    text-decoration: underline;
+}
+
+/* .article-card .data-section .vertical-centered */
+.article-card .data-section .vertical-centered {
+    display: flex;
+    align-items: center;
+}

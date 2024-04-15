@@ -1,20 +1,21 @@
 .stock-table-container {
   display: flex; /* Use Flexbox */
   flex-direction: column; /* Stack children vertically */
-  max-width: 50%; /* Takes up half of the parent container's width */
-  margin-right: auto; /* Aligns it to the left */
-  padding: 20px; /* Padding around the content */
+  padding: 15px 15px 15px 0; /* Padding around the content */
   box-sizing: border-box; /* Includes padding and border in the element's width */
+  width: 100%;
 }
-
+.stock-table-section {
+  display: flex;
+  flex-direction: column;
+  margin-right: 15px;
+  width: 100%;
+}
 table {
-  width: 100%; /* Full width of the container */
-  border-collapse: collapse; /* Collapses border to remove space */
-  margin-top: 15px;
+  border-color: white;
 }
 
 table, th, td {
-  border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
 }
@@ -35,7 +36,4 @@ tr:hover {
 h1 {
   color: #444;
   font-size: 24px; /* Larger font size for heading */
-}
-.stock-table-container td {
-  font-weight: bold; /* Makes the text in the data cells bold */
 }

@@ -1,17 +1,25 @@
 // components/NewsItem.js
 import React from 'react';
+import './NewsItem.css';
 
-const NewsItem = ({ news }) => {
-    const highResImage = news.thumbnail?.resolutions[0]?.url || 'https://via.placeholder.com/';
-
+function NewsItem({article}) {
+    const img = article.thumbnail?.resolutions[0]?.url || 'https://via.placeholder.com/';
+    const title = article.title || 'Title';
     return (
-        <div className="news-item">
-            <a href={news.link} target="_blank" rel="noopener noreferrer">
-                <img src={highResImage} alt={news.title} />
-                <h3 width="fit-content">{news.title}</h3>
-            </a>
+        <div className="StyledContainer">
+            <div className="article-card">
+                <img src={img} alt=""/>
+                <div className="title">
+                    <span>{title}</span>
+                </div>
+                <div className="divider"/>
+                <div className="description">
+                    <span>Get Sentiment</span>
+                </div>
+            </div>
         </div>
     );
-};
+
+}
 
 export default NewsItem;

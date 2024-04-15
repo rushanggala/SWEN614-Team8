@@ -2,4 +2,6 @@
 /.idea/*
 data/
 node_modules/
-/terraform/variable.tf
+/terraform/*
+!/terraform/main.tf
+!/terraform/data.tf
