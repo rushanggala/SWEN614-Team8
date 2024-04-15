@@ -15,7 +15,8 @@ const CompanyPage = () => {
     const {stockArray, stockNews} = useContext(StockDataContext);
     const [isLoading, setIsLoading] = useState(true)
     const [historicalData, setHistoricalData] = useState([]);
-
+    const currentStockData = stockArray.find(stock => stock.name === ticker);
+    
     useEffect(() => {
         console.log('Fetching stock info for', ticker);
         Promise.all([
@@ -41,7 +42,6 @@ const CompanyPage = () => {
             </div>
         );
     }
-
     return (
         <div>
             <StockChart/>
@@ -49,7 +49,9 @@ const CompanyPage = () => {
                 <div className="content">
                     <div className="news-container">
                         <div className="articles-section">
-                            <StockTable companyData={stockInfo} />
+                            <StockTable companyData={stockInfo}
+                            currentClose={Number(currentStockData ? currentStockData.current_close : null).toFixed(3)}
+                            previousClose={Number(currentStockData ? currentStockData.previous_close : null).toFixed(3)}/>
                             <StockHistoryChart stockHistory={historicalData}/>
                             <NewsList stockNews={stockNews} ticker={ticker}/>
                         </div>

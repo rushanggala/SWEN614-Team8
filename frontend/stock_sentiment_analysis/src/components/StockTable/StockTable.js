@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useContext }  from 'react';
 import './StockTable.css';
 import {Table, TableBody, TableRow, TableCell, TableContainer} from '@mui/material';
 import {Grid} from "@mui/material";
 
-const StockTable = ({companyData}) => {
+const StockTable = ({companyData, currentClose, previousClose }) => {
+    
+    const validCurrentClose = !isNaN(parseFloat(currentClose)) ? parseFloat(currentClose).toFixed(2) : 'N/A';
+    const validPreviousClose = !isNaN(parseFloat(previousClose)) ? parseFloat(previousClose).toFixed(2) : 'N/A';
+
     const formatMarketCap = (value) => {
         if (value >= 1e12) {
             return `${(value / 1e12).toFixed(1)} trillion`;
@@ -16,9 +20,14 @@ const StockTable = ({companyData}) => {
         }
     };
 
+
     return (
         <div className="stock-table-section">
-            <h1>{companyData.longName}</h1>
+            <h1>
+                {companyData.longName}
+                <span style={{ color: 'green' }}> Open: {validPreviousClose + " USD"}</span>
+                <span style={{ color: 'red' }}> Close: {validCurrentClose + " USD"}</span>
+            </h1>
             <div className="stock-table-container">
                 <Grid container spacing={4}>
                     <Grid item xs={6}>
