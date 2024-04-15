@@ -5,19 +5,19 @@ variable "instance_type" {
 }
 
 locals {
-    aws_key_value_pair = "<Your EC2 Key-Value Pair>" # Change this to your Key-Value Pair
+    aws_key_value_pair = "SWEN_614_KEY.pem" # Change this to your Key-Value Pair
   }
 
 variable "github_username" {
     type        = string
     description = "GitHub Username"
-    default     = "<Repositoy Admin's Username>" # Change this to Repositoy Admin's Username
+    default     = "rushanggala" # Change this to Repositoy Admin's Username
 }
 
 variable "github_pat" {
     type        = string
     description = "GitHub Personal Access Token"
-    default     = "<Repositoy Admin's Personal Access Token>" # Change this to Repositoy Admin's Personal Access Token
+    default     = "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" # Change this to Repositoy Admin's Personal Access Token
 }
 
 variable "aws_region" {
@@ -29,13 +29,13 @@ variable "aws_region" {
 variable "aws_access_key" {
     type        = string
     description = "AWS Access Keys"
-    default     = "<Your Root Access Key>" # Change this to your Root Access Key
+    default     = "AKIAVRUVSEAOE2ORAXIX" # Change this to your Root Access Key
 }
 
 variable "aws_secret_access_key" {
     type        = string
     description = "AWS Secret Access Keys"
-    default     = "<Your Root Secret Access Key>" # Change this to your Root Secret Access Key
+    default     = "AKIAVRUVSEAOE2ORAXIX" # Change this to your Root Secret Access Key
 }
 
 variable "bucket_name" {
