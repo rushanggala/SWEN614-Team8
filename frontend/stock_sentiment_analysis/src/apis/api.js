@@ -50,9 +50,9 @@ export const getStockPrice = () => {
 }
 
 export const getSentimentAnalysis = (articleUrl) => {
-    let url = `${apiUrl}/sentiment-analysis`;
+    let url = `${apiUrl}/sentiment-analysis?url=${encodeURIComponent(articleUrl)}`;
     console.log(url);
-    return axios.post(url, { url: articleUrl })
+    return axios.get(url)
         .then((response) => {
             console.log(response.data);
             return response.data;
