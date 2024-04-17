@@ -10,9 +10,9 @@ const NewsList = ({stockNews, ticker}) => {
     );
 
     const handleSentimentAnalysis = (article) => {
-        console.log(article);
-        if (article.publisher === "Yahoo Finance") {
-            const url = article.link;
+
+        if (article.publisher === 'Yahoo Finance') {
+            const url = article.title;
             getSentimentAnalysis(url)
                 .then(data => {
                     setSentimentResult(data);
@@ -52,7 +52,7 @@ const NewsList = ({stockNews, ticker}) => {
                             </div>
                             <div className="sentiment-container">
                                 <button className="get-sentiment-button"
-                                        onClick={() => handleSentimentAnalysis(article.link)}>Get Sentiment
+                                        onClick={() => handleSentimentAnalysis(article)}>Get Sentiment
                                 </button>
                             </div>
                         </div>
