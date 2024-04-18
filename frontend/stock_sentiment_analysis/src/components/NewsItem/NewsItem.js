@@ -7,8 +7,8 @@ function NewsItem({article}) {
     const [sentimentResult, setSentimentResult] = useState({});
     const img = article.thumbnail?.resolutions[0]?.url || 'https://via.placeholder.com/';
     const handleSentimentAnalysis = (article) => {
-        if (article.publiser === 'Yahoo Finance') {
-            const url = article.link;
+        if (article.publisher === 'Yahoo Finance') {
+            const url = article.title;
             getSentimentAnalysis(url)
                 .then(data => {
                     setSentimentResult(data);
