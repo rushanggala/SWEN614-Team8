@@ -52,7 +52,7 @@ const NewsList = ({stockNews, ticker}) => {
                             </div>
                             <div className="sentiment-container">
                                 <button className="get-sentiment-button"
-                                        onClick={() => handleSentimentAnalysis(article.link)}>Get Sentiment
+                                        onClick={() => handleSentimentAnalysis(article)}>Get Sentiment
                                 </button>
                             </div>
                         </div>

@@ -5,13 +5,13 @@ variable "instance_type" {
 }
 
 locals {
-    aws_key_value_pair = "SWEN_614_KEY" # Change this to your Key-Value Pair
+    aws_key_value_pair = "SWEN_614_KEY"
   }
 
 variable "github_username" {
     type        = string
     description = "GitHub Username"
-    default     = "rushanggala" # Change this to Repositoy Admin's Username
+    default     = "rushanggala"
 }
 
 variable "github_pat" {
@@ -40,4 +40,39 @@ variable "aws_secret_access_key" {
 
 variable "bucket_name" {
     default = "cloud-project-team8"
+}
+
+variable "database_engine" {
+  type    = string
+  default = "mysql"
+}
+
+variable "database_identifier" {
+  type    = string
+  default = "rds_instance"
+}
+
+variable "database_engine_version" {
+  type    = string
+  default = "8.0.36"
+}
+
+variable "database_instance_class" {
+  type    = string
+  default = "db.t3.micro"
+}
+
+variable "database_username" {
+  type    = string
+  default = "admin"
+}
+
+variable "database_password" {
+  type    = string
+  default = "adminPassword"
+}
+
+variable "database_name" {
+  type    = string
+  default = "HistoricalStockPrices"
 }

@@ -3,24 +3,19 @@ import json
 import boto3
 from decimal import Decimal
 
-# Initialize DynamoDB resource
 dynamodb = boto3.resource('dynamodb')
 dynamodb_client = boto3.client('dynamodb')
 
 
 def create_table_and_push(ticker, monthly_data):
-    # Define table schema
     table_name = "{}_Historical_Data".format(ticker)
-    # Check if the table exists
     try:
         dynamodb.Table(table_name).load()
         table_exists = True
     except dynamodb_client.exceptions.ResourceNotFoundException:
         table_exists = False
 
-    # Create the table if it doesn't exist
     if not table_exists:
-        # Define table schema
         key_schema = [
             {
                 'AttributeName': 'Month',  # Assuming 'Month' as the primary key attribute
@@ -38,24 +33,19 @@ def create_table_and_push(ticker, monthly_data):
             'WriteCapacityUnits': 5  # Adjust as needed
         }
 
-        # Create the table
         table = dynamodb.create_table(
             TableName=table_name,
             KeySchema=key_schema,
             AttributeDefinitions=attribute_definitions,
             ProvisionedThroughput=provisioned_throughput
         )
-
-        # Wait for the table to be created
         table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
-
         print("Table {} created successfully:".format(ticker), table.table_status)
     else:
         table = dynamodb.Table(table_name)
 
     items_to_add = monthly_data.to_dict(orient='records')
 
-    # Insert data into DynamoDB table
     with table.batch_writer() as batch:
         for item in items_to_add:
             item = json.loads(json.dumps(item), parse_float=Decimal)
@@ -84,12 +74,11 @@ def main():
     all_data = {}
     for ticker in tickers:
         monthly_data = fetch_stock_price(ticker)
-        # create_table_and_push(ticker, monthly_data)
         all_data[ticker] = monthly_data.to_dict(orient='records')
 
-    # Write all the data to a JSON file
     with open('../data/stock_data.json', 'w') as json_file:
         json.dump(all_data, json_file)
+
 
 if __name__ == '__main__':
     main()
