@@ -78,7 +78,7 @@ def upload_news_json_to_s3(news_json):
     bucket_name = sys.argv[1]
     try:
         # Upload the JSON string as a JSON file to S3
-        s3.put_object(Body=news_json, Bucket=bucket_name, Key="latest_news.json")
+        s3.put_object(Body=news_json, Bucket=bucket_name, Key="latest_articles.json")
         print(f"JSON object uploaded successfully to S3 bucket '{bucket_name}")
         return True
     except Exception as e:
