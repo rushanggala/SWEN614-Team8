@@ -31,7 +31,7 @@ def create_table_if_not_exists(ticker: str, connection):
 def connect_to_rds():
     rds_client = boto3.client('rds', region_name='us-east-1')
 
-    response = rds_client.describe_db_instances(DBInstanceIdentifier='stock_rds_instance')
+    response = rds_client.describe_db_instances(DBInstanceIdentifier=sys.argv[2])
     endpoint = response['DBInstances'][0]['Endpoint']['Address']
 
     conn = pymysql.connect(
