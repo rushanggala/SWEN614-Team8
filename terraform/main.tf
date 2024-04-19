@@ -1,9 +1,3 @@
-provider "aws" {
-  region     = var.aws_region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_access_key
-}
-
 resource "aws_security_group" "news_sg" {
   name        = "news_sg"
   description = "security group for EC2 instance"
@@ -45,8 +39,6 @@ resource "aws_instance" "fetch_news_data" {
               echo "Cloning the git repo..."
               git clone https://${var.github_username}:${var.github_pat}@github.com/${var.github_username}/SWEN614-Team8.git
               cd SWEN614-Team8/backend
-              aws s3 cp python.zip s3://${var.bucket_name}
-              aws s3 cp lambda_function.py s3://${var.bucket_name}
               echo "creating and activating python environment"
               python3 -m venv env
               source env/bin/activate
@@ -54,9 +46,9 @@ resource "aws_instance" "fetch_news_data" {
               pip install -r requirements.txt
               pip list
               echo "Running The python script"
-              python fetch_latest_news.py --bucket_name ${var.bucket_name}
+              python fetch_latest_news.py ${var.bucket_name} ${var.database_identifier}
               EOF
-  depends_on      = [aws_db_instance.rds_instance]
+  depends_on      = [aws_db_instance.rds_instance, aws_s3_bucket.news_bucket]
 }
 
 resource "aws_eip_association" "acr_eip_backend_association" {
@@ -78,17 +70,18 @@ resource "aws_iam_role_policy_attachment" "amplify_policy" {
 
 resource "aws_lambda_layer_version" "lambda_layer" {
   layer_name          = "api_packages"
-  s3_bucket           = var.bucket_name
+  s3_bucket           = var.public_bucket_name
   s3_key              = "python.zip"
   compatible_runtimes = ["python3.12"]
+  depends_on = [aws_s3_bucket.news_bucket]
 }
 
 resource "aws_lambda_function" "api_lambda" {
   function_name = "fetch_stock_price"
 
   # The S3 bucket and object key that contains your Lambda function's deployment package
-  s3_bucket = var.bucket_name
-  s3_key    = "lambda_function.py"
+  s3_bucket = var.public_bucket_name
+  s3_key    = "lambda_function.zip"
 
   # Lambda function configuration
   handler = "lambda_function.lambda_handler"
@@ -202,27 +195,17 @@ resource "aws_api_gateway_method_response" "sentiment_analysis_proxy" {
   }
 }
 
-resource "aws_api_gateway_options_method" "options_sentiment_analysis" {
+resource "aws_api_gateway_method" "options_sentiment_analysis" {
   rest_api_id   = aws_api_gateway_rest_api.stock_api.id
   resource_id   = aws_api_gateway_resource.sentiment_analysis_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
 }
 
 resource "aws_api_gateway_integration" "options_integration_sentiment_analysis" {
   rest_api_id             = aws_api_gateway_rest_api.stock_api.id
   resource_id             = aws_api_gateway_resource.sentiment_analysis_resource.id
-  http_method             = aws_api_gateway_options_method.options_sentiment_analysis.http_method
+  http_method             = aws_api_gateway_method.options_sentiment_analysis.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
   request_templates       = {
@@ -266,27 +249,17 @@ resource "aws_api_gateway_method_response" "stock_price_proxy" {
   }
 }
 
-resource "aws_api_gateway_options_method" "options_stock_price" {
+resource "aws_api_gateway_method" "options_stock_price" {
   rest_api_id   = aws_api_gateway_rest_api.stock_api.id
   resource_id   = aws_api_gateway_resource.stock_price_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
 }
 
 resource "aws_api_gateway_integration" "options_integration_stock_price" {
   rest_api_id             = aws_api_gateway_rest_api.stock_api.id
   resource_id             = aws_api_gateway_resource.stock_price_resource.id
-  http_method             = aws_api_gateway_options_method.options_stock_price.http_method
+  http_method             = aws_api_gateway_method.options_stock_price.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
   request_templates       = {
@@ -334,27 +307,17 @@ resource "aws_api_gateway_method_response" "stock_info_proxy" {
   }
 }
 
-resource "aws_api_gateway_options_method" "options_stock_info" {
+resource "aws_api_gateway_method" "options_stock_info" {
   rest_api_id   = aws_api_gateway_rest_api.stock_api.id
   resource_id   = aws_api_gateway_resource.stock_info_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
 }
 
 resource "aws_api_gateway_integration" "options_integration_stock_info" {
   rest_api_id             = aws_api_gateway_rest_api.stock_api.id
   resource_id             = aws_api_gateway_resource.stock_info_resource.id
-  http_method             = aws_api_gateway_options_method.options_stock_info.http_method
+  http_method             = aws_api_gateway_method.options_stock_info.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
   request_templates       = {
@@ -402,27 +365,17 @@ resource "aws_api_gateway_method_response" "stock_historical_price_proxy" {
   }
 }
 
-resource "aws_api_gateway_options_method" "options_stock_historical_price" {
+resource "aws_api_gateway_method" "options_stock_historical_price" {
   rest_api_id   = aws_api_gateway_rest_api.stock_api.id
   resource_id   = aws_api_gateway_resource.stock_historical_price_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
 }
 
 resource "aws_api_gateway_integration" "options_integration_stock_historical_price" {
   rest_api_id             = aws_api_gateway_rest_api.stock_api.id
   resource_id             = aws_api_gateway_resource.stock_historical_price_resource.id
-  http_method             = aws_api_gateway_options_method.options_stock_historical_price.http_method
+  http_method             = aws_api_gateway_method.options_stock_historical_price.http_method
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
   request_templates       = {
@@ -448,7 +401,7 @@ resource "aws_api_gateway_integration" "fetch_news_integration" {
   resource_id             = aws_api_gateway_resource.fetch_news_resource.id
   http_method             = aws_api_gateway_method.fetch_news_method.http_method
   integration_http_method = "GET"
-  type                    = "AWS_PROXY"
+  type                    = "AWS"
   uri                     = "arn:aws:apigateway:${var.aws_region}:s3:path/${var.bucket_name}/latest_articles.json"
   credentials             = aws_iam_role.api_gateway_role.arn
 }
@@ -466,27 +419,17 @@ resource "aws_api_gateway_method_response" "fetch_news_proxy" {
   }
 }
 
-resource "aws_api_gateway_options_method" "options_fetch_news" {
+resource "aws_api_gateway_method" "options_fetch_news" {
   rest_api_id   = aws_api_gateway_rest_api.stock_api.id
   resource_id   = aws_api_gateway_resource.fetch_news_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true
-    "method.response.header.Access-Control-Allow-Methods" = true
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
 }
 
 resource "aws_api_gateway_integration" "options_integration_fetch_news" {
   rest_api_id = aws_api_gateway_rest_api.stock_api.id
   resource_id = aws_api_gateway_resource.fetch_news_resource.id
-  http_method = aws_api_gateway_options_method.options_fetch_news.http_method
+  http_method = aws_api_gateway_method.options_fetch_news.http_method
 
   integration_http_method = "OPTIONS"
   type                    = "MOCK"
@@ -494,6 +437,7 @@ resource "aws_api_gateway_integration" "options_integration_fetch_news" {
     "application/json" = "{\"statusCode\": 200}"
   }
 }
+
 
 resource "aws_iam_role" "api_gateway_role" {
   name               = "api_gateway_role"
@@ -559,11 +503,13 @@ resource "aws_api_gateway_deployment" "stock_api_deployment" {
     aws_api_gateway_method_response.stock_price_proxy,
     aws_api_gateway_method_response.stock_info_proxy,
     aws_api_gateway_method_response.stock_historical_price_proxy,
+    aws_api_gateway_method_response.fetch_news_proxy,
 
-    aws_api_gateway_options_method.options_sentiment_analysis,
-    aws_api_gateway_options_method.options_stock_price,
-    aws_api_gateway_options_method.options_stock_info,
-    aws_api_gateway_options_method.options_stock_historical_price,
+    aws_api_gateway_method.options_sentiment_analysis,
+    aws_api_gateway_method.options_stock_price,
+    aws_api_gateway_method.options_stock_info,
+    aws_api_gateway_method.options_stock_historical_price,
+    aws_api_gateway_method.options_fetch_news
   ]
 
   rest_api_id = aws_api_gateway_rest_api.stock_api.id
@@ -643,6 +589,7 @@ resource "aws_db_instance" "rds_instance" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
   publicly_accessible    = true
+  depends_on = [aws_security_group.rds_sg, aws_s3_bucket.news_bucket]
 }
 
 resource "time_sleep" "wait_60_seconds" {
@@ -652,4 +599,5 @@ resource "time_sleep" "wait_60_seconds" {
 
 resource "aws_s3_bucket" "news_bucket" {
   bucket = var.bucket_name
+  force_destroy = true
 }
