@@ -18,6 +18,7 @@ const CompanyPage = () => {
     const currentStockData = stockArray.find(stock => stock.name === ticker);
     
     useEffect(() => {
+        setIsLoading(true)
         console.log('Fetching stock info for', ticker);
         Promise.all([
         getStockInfo(ticker),
