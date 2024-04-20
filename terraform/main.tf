@@ -73,7 +73,7 @@ resource "aws_lambda_layer_version" "lambda_layer" {
   s3_bucket           = var.public_bucket_name
   s3_key              = "python.zip"
   compatible_runtimes = ["python3.12"]
-  depends_on = [aws_s3_bucket.news_bucket]
+  depends_on          = [aws_s3_bucket.news_bucket]
 }
 
 resource "aws_lambda_function" "api_lambda" {
@@ -406,6 +406,25 @@ resource "aws_api_gateway_integration" "fetch_news_integration" {
   credentials             = aws_iam_role.api_gateway_role.arn
 }
 
+resource "aws_api_gateway_integration_response" "fetch_news_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.stock_api.id
+  resource_id = aws_api_gateway_resource.fetch_news_resource.id
+  http_method = aws_api_gateway_method.fetch_news_method.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
+
+  response_templates = {
+    "application/json" = <<EOT
+$input.json('$')
+EOT
+  }
+
+  depends_on = [aws_api_gateway_integration.fetch_news_integration]
+}
+
 resource "aws_api_gateway_method_response" "fetch_news_proxy" {
   rest_api_id = aws_api_gateway_rest_api.stock_api.id
   resource_id = aws_api_gateway_resource.fetch_news_resource.id
@@ -455,34 +474,9 @@ resource "aws_iam_role" "api_gateway_role" {
   })
 }
 
-resource "aws_iam_policy" "s3_access_policy" {
-  name        = "s3_access_policy"
-  description = "Policy for accessing S3 bucket"
-
-  policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:*",
-          "s3:GetObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          "arn:aws:s3:::fetch-latest-news",
-          "arn:aws:s3:::fetch-latest-news/*"
-        ]
-
-      }
-    ]
-  })
-}
-
-resource "aws_iam_policy_attachment" "s3_access_attachment" {
-  name       = "s3_access_attachment"
-  roles      = [aws_iam_role.api_gateway_role.name]
-  policy_arn = aws_iam_policy.s3_access_policy.arn
+resource "aws_iam_role_policy_attachment" "s3_read_access_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  role       = aws_iam_role.api_gateway_role.name
 }
 
 resource "aws_api_gateway_deployment" "stock_api_deployment" {
@@ -504,6 +498,8 @@ resource "aws_api_gateway_deployment" "stock_api_deployment" {
     aws_api_gateway_method_response.stock_info_proxy,
     aws_api_gateway_method_response.stock_historical_price_proxy,
     aws_api_gateway_method_response.fetch_news_proxy,
+
+    aws_api_gateway_integration_response.fetch_news_integration_response,
 
     aws_api_gateway_method.options_sentiment_analysis,
     aws_api_gateway_method.options_stock_price,
@@ -589,7 +585,7 @@ resource "aws_db_instance" "rds_instance" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
   publicly_accessible    = true
-  depends_on = [aws_security_group.rds_sg, aws_s3_bucket.news_bucket]
+  depends_on             = [aws_security_group.rds_sg, aws_s3_bucket.news_bucket]
 }
 
 resource "time_sleep" "wait_60_seconds" {
@@ -598,6 +594,6 @@ resource "time_sleep" "wait_60_seconds" {
 }
 
 resource "aws_s3_bucket" "news_bucket" {
-  bucket = var.bucket_name
+  bucket        = var.bucket_name
   force_destroy = true
 }

@@ -49,9 +49,26 @@ export const getStockPrice = () => {
         });
 }
 
+export const getNewsData = () => {
+    let url = `${apiUrl}/stock-news`;
+
+    return axios.get(url)
+        .then(response => {
+            if (response.status === 200) {
+                console.log("StockNews:",response.data);
+                return response.data;
+            } else {
+                console.error('Error fetching data:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+};
+
 export const getSentimentAnalysis = (articleUrl) => {
     let url = `${apiUrl}/sentiment-analysis`;
-    let data = { url: articleUrl };
+    let data = {url: articleUrl};
 
     return axios.post(url, data)
         .then((response) => {
