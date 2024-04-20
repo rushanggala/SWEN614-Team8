@@ -8,6 +8,8 @@ from config import *
 import pymysql
 import os
 import boto3
+import pandas as pd
+from sqlalchemy import create_engine
 
 
 def fetch_stock_price():
@@ -65,22 +67,22 @@ def fetch_stock_historical_price(event):
             'body': 'Ticker parameter is missing in the query string'
         }
 
-    conn = pymysql.connect(
-        host=os.environ.get('PG_HOST'),
-        user=os.environ.get('PG_USER'),
-        password=os.environ.get('PG_PASSWORD'),
-        database=os.environ.get('PG_DATABASE')
-    )
+    host = os.environ.get('PG_HOST')
+    user = os.environ.get('PG_USER')
+    password = os.environ.get('PG_PASSWORD')
+    database = os.environ.get('PG_DATABASE')
 
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM {ticker.lower()}_historical_price")
-    historical_price_data = cursor.fetchall()
-    cursor.close()
-    conn.close()
+    engine = create_engine(
+        f'mysql+pymysql://{user}:{password}@{host}/{database}')
+
+    query = f"SELECT * FROM {ticker.lower()}_historical_price"
+    historical_price_data = pd.read_sql(query, engine)
+
+    engine.dispose()
 
     return {
         'statusCode': 200,
-        'body': json.dumps(historical_price_data, default=str, indent=4)
+        'body': historical_price_data.to_json(orient='records', default_handler=str, indent=4)
     }
 
 

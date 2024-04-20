@@ -89,6 +89,7 @@ def upload_news_json_to_s3(news_json):
 def fetch_stock_historical_price_and_store(ticker, conn, engine):
     stock = yf.Ticker(ticker)
     hist = stock.history(period="max")
+    hist.reset_index(inplace=True)
     create_table_if_not_exists(ticker, conn)
     hist.to_sql(f"{ticker.lower()}_historical_price", engine, if_exists='replace', index=False)
 
