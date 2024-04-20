@@ -1,6 +1,6 @@
 // StockDataContext.js
 import React, {createContext, useState, useEffect} from 'react';
-import {getStockPrice} from '../apis/api';
+import {getStockPrice, getNewsData} from '../apis/api';
 
 export const StockDataContext = createContext([]);
 
@@ -10,23 +10,13 @@ export const StockDataProvider = ({children}) => {
     const [stockNews, setStockNews] = useState([]);
 
     useEffect(() => {
-    const fetchData = () => {
-        fetch('/latest_articles.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        getNewsData()
             .then(data => {
                 setStockNews(data);
-                console.log('Data fetched');
             })
             .catch(error => {
-                console.error('Error fetching news data:', error);
+                console.error(error);
             });
-    };
-    fetchData();
 }, []);
 
     useEffect(() => {
