@@ -26,6 +26,13 @@
     text-align: center;
 }
 
+.article-card .publisher {
+    font-family: "Times New Roman", serif;
+    padding: 5px 10px 0px 10px;
+    font-size: 15px;
+    text-align: center;
+}
+
 /* .article-card .divider */
 .article-card .divider {
     margin-top: 13px;

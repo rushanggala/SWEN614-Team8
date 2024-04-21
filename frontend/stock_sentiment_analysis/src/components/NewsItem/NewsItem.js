@@ -17,7 +17,6 @@ function NewsItem({article}) {
                 })
                 .catch(error => {
                     console.error('Error performing sentiment analysis:', error);
-                    // Handle the error here
                 });
         } else {
             console.log('Sentiment analysis is not available for this article');
@@ -33,6 +32,11 @@ function NewsItem({article}) {
                 <div className="title">
                     <a href={article.link} target="_blank" rel="noreferrer">
                         <span>{article.title}</span>
+                    </a>
+                </div>
+                <div className="publisher">
+                    <a href={article.link} target="_blank" rel="noreferrer">
+                        <span>{article.publisher}</span>
                     </a>
                 </div>
                 <div className="divider"/>
