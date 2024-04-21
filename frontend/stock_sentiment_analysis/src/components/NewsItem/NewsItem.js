@@ -34,7 +34,7 @@ function NewsItem({article}) {
                         <span>{article.title}</span>
                     </a>
                 </div>
-                <div>
+                <div className="publisher">
                     <a href={article.link} target="_blank" rel="noreferrer">
                         <span>{article.publisher}</span>
                     </a>
