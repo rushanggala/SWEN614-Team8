@@ -213,6 +213,36 @@ resource "aws_api_gateway_integration" "options_integration_sentiment_analysis" 
   }
 }
 
+resource "aws_api_gateway_method_response" "options_method_response_sentiment_analysis" {
+  rest_api_id = aws_api_gateway_rest_api.stock_api.id
+  resource_id = aws_api_gateway_resource.sentiment_analysis_resource.id
+  http_method = "OPTIONS"
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+
+  depends_on = [aws_api_gateway_method.options_sentiment_analysis]
+}
+
+
+resource "aws_api_gateway_integration_response" "options_integration_response_sentiment_analysis" {
+  rest_api_id = aws_api_gateway_rest_api.stock_api.id
+  resource_id = aws_api_gateway_resource.sentiment_analysis_resource.id
+  http_method = aws_api_gateway_method.options_sentiment_analysis.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'",
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+  depends_on = [aws_api_gateway_integration.options_integration_sentiment_analysis]
+}
+
 resource "aws_api_gateway_resource" "stock_price_resource" {
   rest_api_id = aws_api_gateway_rest_api.stock_api.id
   parent_id   = aws_api_gateway_rest_api.stock_api.root_resource_id
@@ -500,6 +530,7 @@ resource "aws_api_gateway_deployment" "stock_api_deployment" {
     aws_api_gateway_method_response.fetch_news_proxy,
 
     aws_api_gateway_integration_response.fetch_news_integration_response,
+    aws_api_gateway_integration_response.options_integration_response_sentiment_analysis,
 
     aws_api_gateway_method.options_sentiment_analysis,
     aws_api_gateway_method.options_stock_price,

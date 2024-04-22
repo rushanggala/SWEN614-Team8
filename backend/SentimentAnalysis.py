@@ -1,84 +1,53 @@
 import pandas as pd
-import json
-import matplotlib.pyplot as plt
+import yfinance as yf
+from config import selected_symbols
+from matplotlib import pyplot as plt
+import matplotlib.dates as mdates
 
 
-def process_stock_data(data):
-    dfs = []
-    for stock, values in data.items():
-        df = pd.DataFrame(values)
-        df['Stock Symbol'] = stock
-        dfs.append(df)
+def get_stock_data(ticker):
+    start_date = '2022-01-01'
+    end_date = '2023-12-31'
 
-    merged_df = pd.concat(dfs, ignore_index=True)
-    merged_df['Change'] = merged_df['Close'] - merged_df['Open']
-    merged_df = merged_df[['Stock Symbol', 'Week', 'Change', 'Close']]
-    return merged_df
-
-
-def rescale_sentiment_score(sentiment_score):
-    rescaled_score = (sentiment_score + 1) * 50
-    return rescaled_score
+    stock_data = yf.download(ticker, start=start_date, end=end_date)
+    weekly_prices = stock_data.resample('W').agg({'Open': 'first', 'Close': 'last'})
+    return weekly_prices
 
 
 def main():
-    with open('../data/stock_data.json', 'r') as f:
-        stock_data = json.load(f)
+    for ticker in selected_symbols:
+        stock_data = get_stock_data(ticker)
 
-    processed_stock_data = process_stock_data(stock_data)
+        stock_sentiment = pd.read_csv(f'../data/{ticker}_sentiment_analysis_result.csv')
+        stock_sentiment['Date'] = pd.to_datetime(stock_sentiment['Date'])
+        stock_sentiment.set_index('Date', inplace=True)
+        stock_sentiment['Sentiment_Score'] = pd.to_numeric(stock_sentiment['Sentiment_Score'], errors='coerce')
 
-    df = pd.read_json('../data/final_data.json', lines=True)
-    df = df[['Date', 'Stock_symbol', 'Sentiment_Score']]
-    df['Week'] = pd.to_datetime(df['Date']).dt.to_period('W')
-    df['Week'] = df['Week'].apply(
-        lambda x: f"{x.start_time.strftime('%Y-%m-%d')}")
-    df['Compound Score'] = df['Sentiment_Score'].apply(lambda x: x['compound'])
-    # Rescale Score
-    df['Compound Score'] = df['Compound Score'].apply(rescale_sentiment_score)
-    average_sentiment = df.groupby(['Stock_symbol', 'Week'])['Compound Score'].mean().reset_index()
-    apple_sentiment = average_sentiment[average_sentiment['Stock_symbol'] == 'AAPL']
-    apple_data = processed_stock_data[processed_stock_data['Stock Symbol'] == 'AAPL']
+        # Resample the data on a weekly basis, calculating the mean sentiment score for each week
+        weekly_average = stock_sentiment['Sentiment_Score'].resample('W').mean()
+        fig, ax1 = plt.subplots(figsize=(20, 6))
 
+        color = 'tab:red'
+        ax1.set_xlabel('Date')
+        ax1.set_ylabel('Close', color=color)
+        ax1.plot(stock_data.index, stock_data['Close'], color=color)
+        ax1.tick_params(axis='y', labelcolor=color)
 
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(apple_data['Week'], apple_data['Close'], marker='o', color='b', linestyle='-')
-    # plt.title('Line Graph of Data')
-    # plt.xlabel('Date')
-    # plt.ylabel('Value')
-    # plt.grid(True)
-    # plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
-    # plt.tight_layout()  # Adjust layout to prevent clipping of labels
-    # plt.show()
-    #
-    # # Plot Average Sentiment Score
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(apple_sentiment['Week'], apple_sentiment['Sentiment_Score'], marker='o', color='r', linestyle='-')
-    # plt.title('Line Graph of Sentiment Score')
-    # plt.xlabel('Date')
-    # plt.ylabel('Sentiment Score')
-    # plt.grid(True)
-    # plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
-    # plt.tight_layout()  # Adjust layout to prevent clipping of labels
-    # plt.show()
+        # Create a second y-axis for Sentiment Score
+        ax2 = ax1.twinx()
+        color = 'tab:blue'
+        ax2.set_ylabel('Sentiment Score', color=color)
+        ax2.plot(weekly_average.index, weekly_average.values, color=color)
+        ax2.tick_params(axis='y', labelcolor=color)
 
-    plt.figure(figsize=(10, 6))
+        ax1.set_xlim(stock_data.index.min(), stock_data.index.max())
+        # Customize x-axis ticks for more granularity
+        ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval=8))  # Set ticks to every week
+        ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
 
-    plt.plot(apple_data['Week'], apple_data['Close'], marker='o', color='b', linestyle='-', label='Stock Price')
-
-    plt.plot(apple_sentiment['Week'], apple_sentiment['Compound Score'], marker='o', color='r', linestyle='-',
-             label='Sentiment Score')
-
-    plt.title('Line Graph of Stock Price and Sentiment Score')
-    plt.xlabel('Date')
-    plt.ylabel('Value / Sentiment Score')
-    plt.grid(True)
-    plt.xticks(rotation=90)
-    plt.tight_layout()
-    plt.legend()
-
-    plt.show()
-
-    print("Check")
+        fig.tight_layout()
+        plt.grid(True)
+        plt.savefig(f'../data/{ticker}_stock_sentiment_analysis.png')
 
 
 if __name__ == '__main__':
