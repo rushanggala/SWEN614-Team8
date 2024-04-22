@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // For development
-// const apiUrl = "http://127.0.0.1:5000";
+// const apiUrl = "https://2mdf9udb97.execute-api.us-east-1.amazonaws.com/prod";
 
 //For production
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
