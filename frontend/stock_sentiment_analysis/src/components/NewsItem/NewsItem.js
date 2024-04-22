@@ -12,7 +12,7 @@ function NewsItem({article}) {
             getSentimentAnalysis(url)
                 .then(data => {
                     setSentimentResult(data);
-                    alert(data);
+                    alert(JSON.stringify(data));
                     console.log('Sentiment analysis result:', data);
                 })
                 .catch(error => {
