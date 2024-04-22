@@ -6,8 +6,7 @@ import {StockDataContext} from "../../context/StockDataContext";
 
 const NewsData = () => {
     const {stockArray, stockNews} = useContext(StockDataContext);
-    const top4News = stockNews.slice(0, 4);
-    console.log(top4News);
+    const top4News = stockNews ? stockNews.slice(0, 4) : [];
     return (
         <div className="homepage-container"> {/* Add className for the container */}
             <div className="content">
