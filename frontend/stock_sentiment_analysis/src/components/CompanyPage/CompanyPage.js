@@ -8,7 +8,7 @@ import {useParams} from 'react-router-dom';
 import {getStockInfo, getStockHistoricalInfo} from "../../apis/api";
 import StockHistoryChart from "../StockHistoryChart/StockHistoryChart";
 import NewsList from "../NewsList/NewsList";
-
+import SentimentAnalysis from "../SentimentAnalysis/SentimentAnalysis";
 const CompanyPage = () => {
     const {ticker} = useParams();
     const [stockInfo, setStockInfo] = useState({});
@@ -54,6 +54,7 @@ const CompanyPage = () => {
                             currentClose={Number(currentStockData ? currentStockData.current_close : null).toFixed(3)}
                             previousClose={Number(currentStockData ? currentStockData.previous_close : null).toFixed(3)}/>
                             <StockHistoryChart stockHistory={historicalData}/>
+                            <SentimentAnalysis ticker={ticker}/>
                             <NewsList stockNews={stockNews} ticker={ticker}/>
                         </div>
                         <div className="quick-infos-section">
