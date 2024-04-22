@@ -40,11 +40,11 @@ function NewsItem({article}) {
                     </a>
                 </div>
                 <div className="divider"/>
-                <div className="description">
-                    <button className="get-sentiment-button" onClick={() => handleSentimentAnalysis(article)}>Get
-                        Sentiment
-                    </button>
-                </div>
+                {/*<div className="description">*/}
+                {/*    <button className="get-sentiment-button" onClick={() => handleSentimentAnalysis(article)}>Get*/}
+                {/*        Sentiment*/}
+                {/*    </button>*/}
+                {/*</div>*/}
             </div>
         </div>
     );
