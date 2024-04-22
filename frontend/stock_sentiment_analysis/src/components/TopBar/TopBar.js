@@ -15,9 +15,9 @@ const TopBar = () => {
             </Link>
             <SearchBar />
             <nav className="custom-navbar">
-            <Link to={isCustomSentimentPage ? "/" : "/custom-sentiment"} className="custom-sentiment-button">
+            {/* <Link to={isCustomSentimentPage ? "/" : "/custom-sentiment"} className="custom-sentiment-button">
                     {isCustomSentimentPage ? "Home" : "Custom Sentiment"}
-                </Link>
+                </Link> */}
             </nav>
         </div>
         
