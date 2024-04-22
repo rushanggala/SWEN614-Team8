@@ -58,7 +58,10 @@ function NewsItem({article}) {
                     <div className="modal-content">
                         <span className="close" onClick={closeModal}>&times;</span>
                         <p>Sentiment Analysis Result:</p>
-                        <pre>{JSON.stringify(sentimentResult, null, 2)}</pre>
+                        <pre>Mixed: {sentimentResult.mixed}
+                             Positive: {sentimentResult.positive}
+                             Negative: {sentimentResult.negative}
+                             Neutral: {sentimentResult.neutral}</pre>
                     </div>
                 </div>
             )}
