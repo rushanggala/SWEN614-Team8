@@ -12,7 +12,7 @@ dtypes = {
 parse_dates = ['Date']
 
 # File path to the data file
-file_path = "data/nasdaq_exteral_data.csv"
+file_path = "../data/nasdaq_exteral_data.csv"
 
 # Columns to use from the data file
 columns_to_use = ['Date', 'Article_title', 'Stock_symbol', 'Article']
