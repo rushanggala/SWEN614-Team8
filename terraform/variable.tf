@@ -5,19 +5,19 @@ variable "instance_type" {
 }
 
 locals {
-    aws_key_value_pair = "SWEN_614_KEY"
+    aws_key_value_pair = "<Your Key Value Pair>"   # Change this to your desired AWS Key-Value pair
   }
 
 variable "github_username" {
     type        = string
     description = "GitHub Username"
-    default     = "rushanggala"
+    default     = "<Repositoy Admin's Username>" # Change this to Repositoy Admin's Username
 }
-
+ 
 variable "github_pat" {
     type        = string
     description = "GitHub Personal Access Token"
-    default     = "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" # Change this to Repositoy Admin's Personal Access Token
+    default     = "<Repositoy Admin's Personal Access Token>" # Change this to Repositoy Admin's Personal Access Token
 }
 
 variable "aws_region" {
@@ -29,16 +29,20 @@ variable "aws_region" {
 variable "aws_access_key" {
     type        = string
     description = "AWS Access Keys"
-    default     = "AKIAVRUVSEAOE2ORAXIX" # Change this to your Root Access Key
+    default     = "<Your Root Access Key>" # Change this to your Root Access Key
 }
 
 variable "aws_secret_access_key" {
     type        = string
     description = "AWS Secret Access Keys"
-    default     = "CAaXxKR8+h2za1JZZvaVxz8DimozN/yfo8wHE4Yo" # Change this to your Root Secret Access Key
+    default     = "<Your Root Secret Access Key>" # Change this to your Root Secret Access Key
 }
 
 variable "bucket_name" {
+    default = "<Your Bucket Name>" # you can change this to your desired unique bucket name that you want to create
+}
+
+variable "public_bucket_name" {
     default = "cloud-project-team8"
 }
 
@@ -49,7 +53,7 @@ variable "database_engine" {
 
 variable "database_identifier" {
   type    = string
-  default = "rds_instance"
+  default = "rds-instance"
 }
 
 variable "database_engine_version" {
